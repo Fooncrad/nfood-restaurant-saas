@@ -3,6 +3,7 @@ import {
   ArrowDownRight,
   ArrowUpRight,
   Bell,
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   FileText,
@@ -56,6 +57,8 @@ const translations = {
     langLabel: "العربية",
     osLabel: "نظام نفود",
     adminBadge: "مركز الأدمن المركزي",
+    toast_mock: "بيانات تجريبية — التفاصيل الكاملة قريبًا",
+    toast_added: "تمت الإضافة بنجاح (تجريبي)",
   },
   en: {
     dir: "ltr",
@@ -83,6 +86,8 @@ const translations = {
     langLabel: "English",
     osLabel: "NFOOD OS",
     adminBadge: "CENTRAL ADMIN",
+    toast_mock: "Demo data — full details coming soon",
+    toast_added: "Added successfully (demo)",
   },
   fr: {
     dir: "ltr",
@@ -110,6 +115,8 @@ const translations = {
     langLabel: "Français",
     osLabel: "Système NFOOD",
     adminBadge: "ADMIN CENTRAL",
+    toast_mock: "Données de démonstration — détails à venir",
+    toast_added: "Ajouté avec succès (démo)",
   },
 };
 
@@ -283,7 +290,7 @@ function SidebarLink({ icon, label, active, onClick }: { icon: ReactNode; label:
   );
 }
 
-function SectionPanel({ config }: { config?: SectionPanelConfig }) {
+function SectionPanel({ config, actionLabel, onAction }: { config?: SectionPanelConfig; actionLabel?: string; onAction?: (title: string) => void }) {
   if (!config) return null;
   return (
     <div className="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700/60 dark:bg-[#1e293b]">
@@ -293,12 +300,24 @@ function SectionPanel({ config }: { config?: SectionPanelConfig }) {
       </div>
       <div className="grid gap-3 p-5 sm:grid-cols-3">
         {config.stats.map((stat) => (
-          <div key={stat.label} className="rounded-xl bg-slate-50 p-4 dark:bg-slate-900/40">
+          <button
+            key={stat.label}
+            type="button"
+            onClick={() => onAction?.(config.title)}
+            className="cursor-pointer rounded-xl bg-slate-50 p-4 text-start transition hover:bg-slate-100 hover:shadow-sm dark:bg-slate-900/40 dark:hover:bg-slate-800/60"
+          >
             <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">{stat.label}</p>
             <p className={`mt-1.5 inline-flex rounded-full px-2.5 py-1 text-xs font-black ring-1 ring-inset ${toneCls[stat.tone]}`}>{stat.value}</p>
-          </div>
+          </button>
         ))}
       </div>
+      {actionLabel && (
+        <div className="border-t border-slate-100 p-4 dark:border-slate-700/50">
+          <button type="button" onClick={() => onAction?.(config.title)} className="w-full cursor-pointer rounded-xl bg-orange-500 py-2.5 text-xs font-black text-white transition hover:bg-orange-600">
+            {actionLabel}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -308,12 +327,16 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
   const dark = (currentTheme ?? themeContext.theme) === "dark";
   const toggleTheme = onToggleTheme ?? themeContext.toggleTheme;
 
-  const [lang, setLang] = useState<Language>(() => (localStorage.getItem("nfood-lang") as Language) || "ar");
+  const [lang, setLang] = useState<Language>(() => {
+    const stored = localStorage.getItem("nfood-lang");
+    return stored === "ar" || stored === "en" || stored === "fr" ? stored : "ar";
+  });
   const [activeTab, setActiveTab] = useState<string>("orders");
   const [activeNav, setActiveNav] = useState<NavKey>("overview");
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const t = translations[lang];
 
@@ -322,6 +345,14 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
     document.documentElement.dir = t.dir;
     localStorage.setItem("nfood-lang", lang);
   }, [lang, t.dir]);
+
+  useEffect(() => {
+    if (!toastMsg) return;
+    const id = window.setTimeout(() => setToastMsg(null), 2400);
+    return () => window.clearTimeout(id);
+  }, [toastMsg]);
+
+  const notify = (message: string) => setToastMsg(message);
 
   const cycleLanguage = () => {
     const order: Language[] = ["ar", "en", "fr"];
@@ -341,12 +372,12 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
   };
 
   const kpis = [
-    { label: t.card_restaurants, value: "24", trend: "+3", up: true, icon: TrendingUp },
-    { label: t.card_accounts, value: "3,412", trend: "+128", up: true, icon: Users },
-    { label: t.card_subscriptions, value: "187", trend: "+9", up: true, icon: ShieldCheck },
-    { label: t.card_notifications, value: "12", trend: "-4", up: false, icon: Bell },
-    { label: t.card_transfers, value: "5", trend: "+2", up: true, icon: FileText },
-    { label: t.card_files, value: "860", trend: "+45", up: true, icon: FolderOpen },
+    { label: t.card_restaurants, value: "24", trend: "+3", up: true, icon: TrendingUp, nav: "accounts" as NavKey },
+    { label: t.card_accounts, value: "3,412", trend: "+128", up: true, icon: Users, nav: "accounts" as NavKey },
+    { label: t.card_subscriptions, value: "187", trend: "+9", up: true, icon: ShieldCheck, nav: "settings" as NavKey },
+    { label: t.card_notifications, value: "12", trend: "-4", up: false, icon: Bell, nav: "overview" as NavKey },
+    { label: t.card_transfers, value: "5", trend: "+2", up: true, icon: FileText, nav: "accounts" as NavKey },
+    { label: t.card_files, value: "860", trend: "+45", up: true, icon: FolderOpen, nav: "files" as NavKey },
   ];
 
   const tabs = [
@@ -449,7 +480,7 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
               {kpis.map((kpi) => {
                 const Icon = kpi.icon;
                 return (
-                  <div key={kpi.label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md dark:border-slate-700/60 dark:bg-[#1e293b]">
+                  <button type="button" key={kpi.label} onClick={() => setActiveNav(kpi.nav)} className="cursor-pointer rounded-2xl border border-slate-200 bg-white p-4 text-start shadow-sm transition hover:border-orange-200 hover:shadow-md dark:border-slate-700/60 dark:bg-[#1e293b] dark:hover:border-orange-500/40">
                     <div className="flex items-center justify-between gap-2">
                       <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-500 dark:bg-orange-500/10 dark:text-orange-400">
                         <Icon size={17} />
@@ -461,7 +492,7 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
                     </div>
                     <p className="mt-3 text-2xl font-black tracking-tight">{kpi.value}</p>
                     <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-500 dark:text-slate-400">{kpi.label}</p>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -488,10 +519,10 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
                     <h2 className="text-base font-black">{t.table_title}</h2>
                     <p className="mt-1 text-[11px] leading-5 text-slate-500 dark:text-slate-400">{t.table_subtitle}</p>
                   </div>
-                  <span className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[10px] font-black text-orange-600 dark:bg-orange-500/10 dark:text-orange-400">
+                  <button type="button" onClick={() => handleOpenModal(mockOrders[0])} className="flex cursor-pointer items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[10px] font-black text-orange-600 transition hover:bg-orange-100 dark:bg-orange-500/10 dark:text-orange-400 dark:hover:bg-orange-500/20">
                     <ShieldCheck size={11} />
                     {t.btn_viewDetails}
-                  </span>
+                  </button>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[720px] text-right text-sm">
@@ -584,11 +615,11 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
                   <p className="mt-1 text-[11px] text-slate-400">{t.table_subtitle}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button type="button" className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-[11px] font-black text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
+                  <button type="button" onClick={() => notify(t.toast_mock)} className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-[11px] font-black text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
                     <UserCheck size={14} />
                     {t.btn_manageCustomers}
                   </button>
-                  <button type="button" className="flex items-center gap-1.5 rounded-xl bg-orange-500 px-3 py-2 text-[11px] font-black text-white transition hover:bg-orange-600">
+                  <button type="button" onClick={() => notify(t.toast_added)} className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-orange-500 px-3 py-2 text-[11px] font-black text-white transition hover:bg-orange-600">
                     <Plus size={14} />
                     {t.btn_addCustomer}
                   </button>
@@ -611,7 +642,7 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
             </div>
               </>
             ) : (
-              <SectionPanel config={sectionPanels[lang]?.[activeNav]} />
+              <SectionPanel config={sectionPanels[lang]?.[activeNav]} actionLabel={t.btn_viewDetails} onAction={() => notify(t.toast_mock)} />
             )}
           </main>
         </div>
@@ -667,6 +698,15 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
             <button type="button" onClick={() => setIsModalOpen(false)} className="mt-5 w-full rounded-xl bg-[#0f172a] py-2.5 text-sm font-black text-white transition hover:bg-slate-800 dark:bg-orange-500 dark:text-slate-900 dark:hover:bg-orange-600">
               {t.modal_close}
             </button>
+          </div>
+        </div>
+      )}
+
+      {toastMsg && (
+        <div className="pointer-events-none fixed inset-x-0 top-5 z-[60] flex justify-center px-4">
+          <div className="pointer-events-auto flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black shadow-xl dark:border-slate-700 dark:bg-[#1e293b] dark:text-slate-100">
+            <CheckCircle2 size={15} className="text-emerald-500" />
+            {toastMsg}
           </div>
         </div>
       )}
