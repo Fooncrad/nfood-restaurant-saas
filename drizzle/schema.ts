@@ -1707,69 +1707,57 @@ export const uiTranslationHistory = mysqlTable("uiTranslationHistory", {
   uiTranslationHistoryAction: index("ui_translation_history_action_idx").on(table.action, table.createdAt),
 }));
 
-export const PLATFORM_SECTOR_KEYS = ["veg", "grocery", "laundry", "auto", "barber", "public", "fashion"] as const;
+export const PLATFORM_SECTOR_KEYS = [
+  "restaurant",
+  "vegetables",
+  "grocery",
+  "laundry",
+  "automotive",
+  "beauty_salon",
+  "public_works",
+  "fashion",
+] as const;
 export type PlatformSectorKey = (typeof PLATFORM_SECTOR_KEYS)[number];
 
-export const platformEntities = mysqlTable("platformEntities", {
-  id: int("id").autoincrement().primaryKey(),
-  sectorKey: mysqlEnum("sectorKey", PLATFORM_SECTOR_KEYS).notNull(),
-  entityRefId: int("entityRefId").references(() => restaurants.id),
-  name: varchar("name", { length: 160 }).notNull(),
-  slug: varchar("slug", { length: 160 }).notNull(),
-  city: varchar("city", { length: 120 }),
-  status: mysqlEnum("status", ["pending", "active", "paused", "suspended"]).default("pending").notNull(),
-  hasBusinessLicense: boolean("hasBusinessLicense").default(false).notNull(),
-  plan: varchar("plan", { length: 40 }).default("Free").notNull(),
-  taxNumber: varchar("taxNumber", { length: 80 }),
-  currencyCode: varchar("currencyCode", { length: 8 }).default("SAR").notNull(),
-  email: varchar("email", { length: 320 }),
-  phone: varchar("phone", { length: 40 }),
-  featureFlagsJson: text("featureFlagsJson").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+export const PLAN_TIERS = ["Basic", "Pro", "Enterprise"] as const;
+export type PlanTier = (typeof PLAN_TIERS)[number];
+
+export const platformEntities = mysqlTable("platform_entities", {
+  id: varchar("id", { length: 30 }).primaryKey(),
+  customerName: text("customer_name").notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  sector: mysqlEnum("sector", PLATFORM_SECTOR_KEYS).default("restaurant").notNull(),
+  status: boolean("status").default(true).notNull(),
+  plan: mysqlEnum("plan", PLAN_TIERS).default("Basic").notNull(),
+  taxId: varchar("tax_id", { length: 50 }).notNull(),
+  licensingFee: decimal("licensing_fee", { precision: 10, scale: 2 }).default("0.00").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 }, (table) => ({
-  platformEntitiesSectorStatusIdx: index("platform_entities_sector_status_idx").on(table.sectorKey, table.status),
-  platformEntitiesSlugIdx: index("platform_entities_slug_idx").on(table.slug),
+  platformEntitiesSectorIdx: index("platform_entities_sector_idx").on(table.sector, table.status),
+  platformEntitiesEmailIdx: index("platform_entities_email_idx").on(table.email),
 }));
 
-export const digitalCatalogs = mysqlTable("digitalCatalogs", {
+export const digitalCatalogs = mysqlTable("digital_catalogs", {
   id: int("id").autoincrement().primaryKey(),
-  entityId: int("entityId").notNull().references(() => platformEntities.id),
-  catalogType: mysqlEnum("catalogType", ["menu", "showcase", "catalog"]).default("catalog").notNull(),
-  name: varchar("name", { length: 160 }).notNull(),
-  locale: varchar("locale", { length: 10 }).default("ar").notNull(),
-  thumbnailUrl: varchar("thumbnailUrl", { length: 500 }),
-  itemsJson: text("itemsJson").notNull(),
-  captionsJson: text("captionsJson"),
-  isPublished: boolean("isPublished").default(false).notNull(),
-  publishedAt: timestamp("publishedAt"),
-  createdByUserId: int("createdByUserId").references(() => users.id),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  entityId: varchar("entity_id", { length: 30 }).notNull().references(() => platformEntities.id, { onDelete: "cascade" }),
+  catalogUrl: text("catalog_url").notNull(),
+  isPublic: boolean("is_public").default(true).notNull(),
+  totalItems: int("total_items").default(0).notNull(),
+  lastSyncedAt: timestamp("last_synced_at").defaultNow(),
 }, (table) => ({
-  digitalCatalogsEntityPublishedIdx: index("digital_catalogs_entity_published_idx").on(table.entityId, table.isPublished),
+  digitalCatalogsEntityIdx: index("digital_catalogs_entity_idx").on(table.entityId),
 }));
 
-export const governanceAuditLogs = mysqlTable("governanceAuditLogs", {
+export const governanceAuditLogs = mysqlTable("governance_audit_logs", {
   id: int("id").autoincrement().primaryKey(),
-  entityId: int("entityId").references(() => platformEntities.id),
-  action: mysqlEnum("action", [
-    "sector.activated",
-    "sector.deactivated",
-    "entity.created",
-    "entity.status_changed",
-    "entity.plan_changed",
-    "catalog.published",
-    "catalog.unpublished",
-    "license.verified",
-  ]).notNull(),
-  actorUserId: int("actorUserId").references(() => users.id),
-  beforeJson: text("beforeJson"),
-  afterJson: text("afterJson"),
-  metadataJson: text("metadataJson"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  adminId: varchar("admin_id", { length: 50 }).notNull(),
+  entityId: varchar("entity_id", { length: 30 }).references(() => platformEntities.id, { onDelete: "set null" }),
+  actionType: varchar("action_type", { length: 100 }).notNull(),
+  previousState: text("previous_state"),
+  nextState: text("next_state"),
+  performedAt: timestamp("performed_at").defaultNow().notNull(),
 }, (table) => ({
-  governanceAuditLogsEntityIdx: index("governance_audit_logs_entity_idx").on(table.entityId, table.createdAt),
-  governanceAuditLogsActionIdx: index("governance_audit_logs_action_idx").on(table.action, table.createdAt),
-  governanceAuditLogsActorIdx: index("governance_audit_logs_actor_idx").on(table.actorUserId, table.createdAt),
+  governanceAuditLogsEntityIdx: index("governance_audit_logs_entity_idx").on(table.entityId, table.performedAt),
+  governanceAuditLogsActionIdx: index("governance_audit_logs_action_idx").on(table.actionType, table.performedAt),
 }));

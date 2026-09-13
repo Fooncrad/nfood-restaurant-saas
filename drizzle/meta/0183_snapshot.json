@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "d7892a5e-fa2c-4a5c-af0a-bbde915b1966",
+  "id": "ce071f21-27c8-4344-a4d8-a3ec7bb68d5f",
   "prevId": "3bfd2911-923b-4aca-ac5e-4971164f1222",
   "tables": {
     "apiWebhooks": {
@@ -3494,8 +3494,8 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
-    "digitalCatalogs": {
-      "name": "digitalCatalogs",
+    "digital_catalogs": {
+      "name": "digital_catalogs",
       "columns": {
         "id": {
           "name": "id",
@@ -3504,138 +3504,72 @@
           "notNull": true,
           "autoincrement": true
         },
-        "entityId": {
-          "name": "entityId",
-          "type": "int",
+        "entity_id": {
+          "name": "entity_id",
+          "type": "varchar(30)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "catalogType": {
-          "name": "catalogType",
-          "type": "enum('menu','showcase','catalog')",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'catalog'"
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(160)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "locale": {
-          "name": "locale",
-          "type": "varchar(10)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'ar'"
-        },
-        "thumbnailUrl": {
-          "name": "thumbnailUrl",
-          "type": "varchar(500)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "itemsJson": {
-          "name": "itemsJson",
+        "catalog_url": {
+          "name": "catalog_url",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "captionsJson": {
-          "name": "captionsJson",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "isPublished": {
-          "name": "isPublished",
+        "is_public": {
+          "name": "is_public",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": false
+          "default": true
         },
-        "publishedAt": {
-          "name": "publishedAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "createdByUserId": {
-          "name": "createdByUserId",
+        "total_items": {
+          "name": "total_items",
           "type": "int",
           "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "last_synced_at": {
+          "name": "last_synced_at",
+          "type": "timestamp",
+          "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
-        },
-        "updatedAt": {
-          "name": "updatedAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "onUpdate": true,
           "default": "(now())"
         }
       },
       "indexes": {
-        "digital_catalogs_entity_published_idx": {
-          "name": "digital_catalogs_entity_published_idx",
+        "digital_catalogs_entity_idx": {
+          "name": "digital_catalogs_entity_idx",
           "columns": [
-            "entityId",
-            "isPublished"
+            "entity_id"
           ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "digitalCatalogs_entityId_platformEntities_id_fk": {
-          "name": "digitalCatalogs_entityId_platformEntities_id_fk",
-          "tableFrom": "digitalCatalogs",
-          "tableTo": "platformEntities",
+        "digital_catalogs_entity_id_platform_entities_id_fk": {
+          "name": "digital_catalogs_entity_id_platform_entities_id_fk",
+          "tableFrom": "digital_catalogs",
+          "tableTo": "platform_entities",
           "columnsFrom": [
-            "entityId"
+            "entity_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "digitalCatalogs_createdByUserId_users_id_fk": {
-          "name": "digitalCatalogs_createdByUserId_users_id_fk",
-          "tableFrom": "digitalCatalogs",
-          "tableTo": "users",
-          "columnsFrom": [
-            "createdByUserId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "digitalCatalogs_id": {
-          "name": "digitalCatalogs_id",
+        "digital_catalogs_id": {
+          "name": "digital_catalogs_id",
           "columns": [
             "id"
           ]
@@ -5020,8 +4954,8 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
-    "governanceAuditLogs": {
-      "name": "governanceAuditLogs",
+    "governance_audit_logs": {
+      "name": "governance_audit_logs",
       "columns": {
         "id": {
           "name": "id",
@@ -5030,50 +4964,43 @@
           "notNull": true,
           "autoincrement": true
         },
-        "entityId": {
-          "name": "entityId",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "action": {
-          "name": "action",
-          "type": "enum('sector.activated','sector.deactivated','entity.created','entity.status_changed','entity.plan_changed','catalog.published','catalog.unpublished','license.verified')",
+        "admin_id": {
+          "name": "admin_id",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "actorUserId": {
-          "name": "actorUserId",
-          "type": "int",
+        "entity_id": {
+          "name": "entity_id",
+          "type": "varchar(30)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "beforeJson": {
-          "name": "beforeJson",
+        "action_type": {
+          "name": "action_type",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "previous_state": {
+          "name": "previous_state",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "afterJson": {
-          "name": "afterJson",
+        "next_state": {
+          "name": "next_state",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "metadataJson": {
-          "name": "metadataJson",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "createdAt": {
-          "name": "createdAt",
+        "performed_at": {
+          "name": "performed_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
@@ -5085,59 +5012,38 @@
         "governance_audit_logs_entity_idx": {
           "name": "governance_audit_logs_entity_idx",
           "columns": [
-            "entityId",
-            "createdAt"
+            "entity_id",
+            "performed_at"
           ],
           "isUnique": false
         },
         "governance_audit_logs_action_idx": {
           "name": "governance_audit_logs_action_idx",
           "columns": [
-            "action",
-            "createdAt"
-          ],
-          "isUnique": false
-        },
-        "governance_audit_logs_actor_idx": {
-          "name": "governance_audit_logs_actor_idx",
-          "columns": [
-            "actorUserId",
-            "createdAt"
+            "action_type",
+            "performed_at"
           ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "governanceAuditLogs_entityId_platformEntities_id_fk": {
-          "name": "governanceAuditLogs_entityId_platformEntities_id_fk",
-          "tableFrom": "governanceAuditLogs",
-          "tableTo": "platformEntities",
+        "governance_audit_logs_entity_id_platform_entities_id_fk": {
+          "name": "governance_audit_logs_entity_id_platform_entities_id_fk",
+          "tableFrom": "governance_audit_logs",
+          "tableTo": "platform_entities",
           "columnsFrom": [
-            "entityId"
+            "entity_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "governanceAuditLogs_actorUserId_users_id_fk": {
-          "name": "governanceAuditLogs_actorUserId_users_id_fk",
-          "tableFrom": "governanceAuditLogs",
-          "tableTo": "users",
-          "columnsFrom": [
-            "actorUserId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "governanceAuditLogs_id": {
-          "name": "governanceAuditLogs_id",
+        "governance_audit_logs_id": {
+          "name": "governance_audit_logs_id",
           "columns": [
             "id"
           ]
@@ -8244,121 +8150,79 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
-    "platformEntities": {
-      "name": "platformEntities",
+    "platform_entities": {
+      "name": "platform_entities",
       "columns": {
         "id": {
           "name": "id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "sectorKey": {
-          "name": "sectorKey",
-          "type": "enum('veg','grocery','laundry','auto','barber','public','fashion')",
+          "type": "varchar(30)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "entityRefId": {
-          "name": "entityRefId",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(160)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "slug": {
-          "name": "slug",
-          "type": "varchar(160)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "city": {
-          "name": "city",
-          "type": "varchar(120)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "enum('pending','active','paused','suspended')",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'pending'"
-        },
-        "hasBusinessLicense": {
-          "name": "hasBusinessLicense",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
-        },
-        "plan": {
-          "name": "plan",
-          "type": "varchar(40)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'Free'"
-        },
-        "taxNumber": {
-          "name": "taxNumber",
-          "type": "varchar(80)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "currencyCode": {
-          "name": "currencyCode",
-          "type": "varchar(8)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'SAR'"
-        },
-        "email": {
-          "name": "email",
-          "type": "varchar(320)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "phone": {
-          "name": "phone",
-          "type": "varchar(40)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "featureFlagsJson": {
-          "name": "featureFlagsJson",
+        "customer_name": {
+          "name": "customer_name",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "sector": {
+          "name": "sector",
+          "type": "enum('restaurant','vegetables','grocery','laundry','automotive','beauty_salon','public_works','fashion')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'restaurant'"
+        },
+        "status": {
+          "name": "status",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "plan": {
+          "name": "plan",
+          "type": "enum('Basic','Pro','Enterprise')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'Basic'"
+        },
+        "tax_id": {
+          "name": "tax_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "licensing_fee": {
+          "name": "licensing_fee",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0.00'"
+        },
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(now())"
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
@@ -8368,46 +8232,39 @@
         }
       },
       "indexes": {
-        "platform_entities_sector_status_idx": {
-          "name": "platform_entities_sector_status_idx",
+        "platform_entities_sector_idx": {
+          "name": "platform_entities_sector_idx",
           "columns": [
-            "sectorKey",
+            "sector",
             "status"
           ],
           "isUnique": false
         },
-        "platform_entities_slug_idx": {
-          "name": "platform_entities_slug_idx",
+        "platform_entities_email_idx": {
+          "name": "platform_entities_email_idx",
           "columns": [
-            "slug"
+            "email"
           ],
           "isUnique": false
         }
       },
-      "foreignKeys": {
-        "platformEntities_entityRefId_restaurants_id_fk": {
-          "name": "platformEntities_entityRefId_restaurants_id_fk",
-          "tableFrom": "platformEntities",
-          "tableTo": "restaurants",
-          "columnsFrom": [
-            "entityRefId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {
-        "platformEntities_id": {
-          "name": "platformEntities_id",
+        "platform_entities_id": {
+          "name": "platform_entities_id",
           "columns": [
             "id"
           ]
         }
       },
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "platform_entities_email_unique": {
+          "name": "platform_entities_email_unique",
+          "columns": [
+            "email"
+          ]
+        }
+      },
       "checkConstraint": {}
     },
     "platformSettings": {
