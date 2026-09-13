@@ -1706,3 +1706,70 @@ export const uiTranslationHistory = mysqlTable("uiTranslationHistory", {
   uiTranslationHistoryEntry: index("ui_translation_history_entry_idx").on(table.entryId, table.createdAt),
   uiTranslationHistoryAction: index("ui_translation_history_action_idx").on(table.action, table.createdAt),
 }));
+
+export const PLATFORM_SECTOR_KEYS = ["veg", "grocery", "laundry", "auto", "barber", "public", "fashion"] as const;
+export type PlatformSectorKey = (typeof PLATFORM_SECTOR_KEYS)[number];
+
+export const platformEntities = mysqlTable("platformEntities", {
+  id: int("id").autoincrement().primaryKey(),
+  sectorKey: mysqlEnum("sectorKey", PLATFORM_SECTOR_KEYS).notNull(),
+  entityRefId: int("entityRefId").references(() => restaurants.id),
+  name: varchar("name", { length: 160 }).notNull(),
+  slug: varchar("slug", { length: 160 }).notNull(),
+  city: varchar("city", { length: 120 }),
+  status: mysqlEnum("status", ["pending", "active", "paused", "suspended"]).default("pending").notNull(),
+  hasBusinessLicense: boolean("hasBusinessLicense").default(false).notNull(),
+  plan: varchar("plan", { length: 40 }).default("Free").notNull(),
+  taxNumber: varchar("taxNumber", { length: 80 }),
+  currencyCode: varchar("currencyCode", { length: 8 }).default("SAR").notNull(),
+  email: varchar("email", { length: 320 }),
+  phone: varchar("phone", { length: 40 }),
+  featureFlagsJson: text("featureFlagsJson").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  platformEntitiesSectorStatusIdx: index("platform_entities_sector_status_idx").on(table.sectorKey, table.status),
+  platformEntitiesSlugIdx: index("platform_entities_slug_idx").on(table.slug),
+}));
+
+export const digitalCatalogs = mysqlTable("digitalCatalogs", {
+  id: int("id").autoincrement().primaryKey(),
+  entityId: int("entityId").notNull().references(() => platformEntities.id),
+  catalogType: mysqlEnum("catalogType", ["menu", "showcase", "catalog"]).default("catalog").notNull(),
+  name: varchar("name", { length: 160 }).notNull(),
+  locale: varchar("locale", { length: 10 }).default("ar").notNull(),
+  thumbnailUrl: varchar("thumbnailUrl", { length: 500 }),
+  itemsJson: text("itemsJson").notNull(),
+  captionsJson: text("captionsJson"),
+  isPublished: boolean("isPublished").default(false).notNull(),
+  publishedAt: timestamp("publishedAt"),
+  createdByUserId: int("createdByUserId").references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  digitalCatalogsEntityPublishedIdx: index("digital_catalogs_entity_published_idx").on(table.entityId, table.isPublished),
+}));
+
+export const governanceAuditLogs = mysqlTable("governanceAuditLogs", {
+  id: int("id").autoincrement().primaryKey(),
+  entityId: int("entityId").references(() => platformEntities.id),
+  action: mysqlEnum("action", [
+    "sector.activated",
+    "sector.deactivated",
+    "entity.created",
+    "entity.status_changed",
+    "entity.plan_changed",
+    "catalog.published",
+    "catalog.unpublished",
+    "license.verified",
+  ]).notNull(),
+  actorUserId: int("actorUserId").references(() => users.id),
+  beforeJson: text("beforeJson"),
+  afterJson: text("afterJson"),
+  metadataJson: text("metadataJson"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  governanceAuditLogsEntityIdx: index("governance_audit_logs_entity_idx").on(table.entityId, table.createdAt),
+  governanceAuditLogsActionIdx: index("governance_audit_logs_action_idx").on(table.action, table.createdAt),
+  governanceAuditLogsActorIdx: index("governance_audit_logs_actor_idx").on(table.actorUserId, table.createdAt),
+}));
