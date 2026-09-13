@@ -1706,3 +1706,58 @@ export const uiTranslationHistory = mysqlTable("uiTranslationHistory", {
   uiTranslationHistoryEntry: index("ui_translation_history_entry_idx").on(table.entryId, table.createdAt),
   uiTranslationHistoryAction: index("ui_translation_history_action_idx").on(table.action, table.createdAt),
 }));
+
+export const PLATFORM_SECTOR_KEYS = [
+  "restaurant",
+  "vegetables",
+  "grocery",
+  "laundry",
+  "automotive",
+  "beauty_salon",
+  "public_works",
+  "fashion",
+] as const;
+export type PlatformSectorKey = (typeof PLATFORM_SECTOR_KEYS)[number];
+
+export const PLAN_TIERS = ["Basic", "Pro", "Enterprise"] as const;
+export type PlanTier = (typeof PLAN_TIERS)[number];
+
+export const platformEntities = mysqlTable("platform_entities", {
+  id: varchar("id", { length: 30 }).primaryKey(),
+  customerName: text("customer_name").notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  sector: mysqlEnum("sector", PLATFORM_SECTOR_KEYS).default("restaurant").notNull(),
+  status: boolean("status").default(true).notNull(),
+  plan: mysqlEnum("plan", PLAN_TIERS).default("Basic").notNull(),
+  taxId: varchar("tax_id", { length: 50 }).notNull(),
+  licensingFee: decimal("licensing_fee", { precision: 10, scale: 2 }).default("0.00").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  platformEntitiesSectorIdx: index("platform_entities_sector_idx").on(table.sector, table.status),
+  platformEntitiesEmailIdx: index("platform_entities_email_idx").on(table.email),
+}));
+
+export const digitalCatalogs = mysqlTable("digital_catalogs", {
+  id: int("id").autoincrement().primaryKey(),
+  entityId: varchar("entity_id", { length: 30 }).notNull().references(() => platformEntities.id, { onDelete: "cascade" }),
+  catalogUrl: text("catalog_url").notNull(),
+  isPublic: boolean("is_public").default(true).notNull(),
+  totalItems: int("total_items").default(0).notNull(),
+  lastSyncedAt: timestamp("last_synced_at").defaultNow(),
+}, (table) => ({
+  digitalCatalogsEntityIdx: index("digital_catalogs_entity_idx").on(table.entityId),
+}));
+
+export const governanceAuditLogs = mysqlTable("governance_audit_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  adminId: varchar("admin_id", { length: 50 }).notNull(),
+  entityId: varchar("entity_id", { length: 30 }).references(() => platformEntities.id, { onDelete: "set null" }),
+  actionType: varchar("action_type", { length: 100 }).notNull(),
+  previousState: text("previous_state"),
+  nextState: text("next_state"),
+  performedAt: timestamp("performed_at").defaultNow().notNull(),
+}, (table) => ({
+  governanceAuditLogsEntityIdx: index("governance_audit_logs_entity_idx").on(table.entityId, table.performedAt),
+  governanceAuditLogsActionIdx: index("governance_audit_logs_action_idx").on(table.actionType, table.performedAt),
+}));

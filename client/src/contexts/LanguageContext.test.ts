@@ -129,9 +129,9 @@ describe("language configuration", () => {
     vi.unstubAllGlobals();
   });
 
-  it("uses English as the safe default for unsupported visitors", () => {
+  it("uses Arabic as the base default for unsupported visitors", () => {
     vi.stubGlobal("window", { navigator: { language: "de-DE" } });
-    expect(detectVisitorLanguage()).toBe("en");
+    expect(detectVisitorLanguage()).toBe("ar");
     vi.unstubAllGlobals();
   });
 
