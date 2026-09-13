@@ -38,9 +38,9 @@ const translations = {
     systemReady: "النظام جاهز",
     searchPlaceholder: "ابحث... (Ctrl + K)",
     adminCenter: "مركز الإدارة",
-    nav_overview: "نظرة عامة", nav_superAdmin: "Super Admin", nav_accounts: "إدارة الحسابات",
+    nav_overview: "نظرة عامة", nav_superAdmin: "المشرفون العامون", nav_accounts: "إدارة الحسابات",
     nav_settings: "الإعدادات العامة", nav_languages: "اللغة والترجمة", nav_files: "مكتبة الملفات",
-    nav_trend: "سوق نفود / Trend Kitchen", nav_security: "أمان الحساب والجلسات", nav_health: "صحة النظام",
+    nav_trend: "سوق نفود / مطبخ الترند", nav_security: "أمان الحساب والجلسات", nav_health: "صحة النظام",
     settingsGroup: "الإعدادات والتخصيص",
     card_restaurants: "المطاعم النشطة", card_accounts: "الحسابات", card_subscriptions: "الاشتراكات",
     card_notifications: "التنبيهات", card_transfers: "التحويلات المعلقة", card_files: "مكتبة الملفات",
@@ -54,6 +54,8 @@ const translations = {
     btn_manageCustomers: "إدارة العملاء", btn_addCustomer: "إضافة عميل", currency: "ريال",
     modal_title: "تفاصيل الطلب والتدقيق المالي", modal_close: "إغلاق", modal_tax: "الرقم الضريبي للمطعم", modal_transfer_status: "أثر التحويل المالي",
     langLabel: "العربية",
+    osLabel: "نظام نفود",
+    adminBadge: "مركز الأدمن المركزي",
   },
   en: {
     dir: "ltr",
@@ -79,6 +81,8 @@ const translations = {
     btn_manageCustomers: "Manage Customers", btn_addCustomer: "Add Customer", currency: "SAR",
     modal_title: "Order Details & Financial Audit", modal_close: "Close", modal_tax: "Restaurant Tax Number", modal_transfer_status: "Transfer Impact Status",
     langLabel: "English",
+    osLabel: "NFOOD OS",
+    adminBadge: "CENTRAL ADMIN",
   },
   fr: {
     dir: "ltr",
@@ -104,10 +108,142 @@ const translations = {
     btn_manageCustomers: "Gérer les Clients", btn_addCustomer: "Ajouter un Client", currency: "EUR",
     modal_title: "Détails de la Commande & Audit Financier", modal_close: "Fermer", modal_tax: "Numéro d'identification fiscale", modal_transfer_status: "Statut de l'impact du transfert",
     langLabel: "Français",
+    osLabel: "Système NFOOD",
+    adminBadge: "ADMIN CENTRAL",
+  },
+};
+
+const sectionPanels: Record<Language, Partial<Record<NavKey, SectionPanelConfig>>> = {
+  ar: {
+    superAdmin: { title: "المشرفون العامون", subtitle: "إدارة مشرفي المنصة وصلاحياتهم وسجل العمليات.", stats: [
+      { label: "المشرفون الحاليون", value: "4", tone: "sky" },
+      { label: "طلبات الترقية المعلقة", value: "2", tone: "orange" },
+      { label: "سجل العمليات اليوم", value: "1,204", tone: "emerald" },
+    ] },
+    accounts: { title: "إدارة الحسابات", subtitle: "حسابات المطاعم والفرق والصلاحيات.", stats: [
+      { label: "إجمالي الحسابات", value: "1,760", tone: "sky" },
+      { label: "حسابات جديدة هذا الشهر", value: "86", tone: "emerald" },
+      { label: "حسابات موقوفة", value: "12", tone: "rose" },
+    ] },
+    settings: { title: "الإعدادات العامة", subtitle: "إعدادات المنصة الأساسية والموقع والمظهر العام.", stats: [
+      { label: "لغة الموقع", value: "العربية", tone: "orange" },
+      { label: "العملة الافتراضية", value: "ريال (SAR)", tone: "emerald" },
+      { label: "وضع الصيانة", value: "معطّل", tone: "sky" },
+    ] },
+    languages: { title: "اللغة والترجمة", subtitle: "لغة المنصة الافتراضية وخيارات الترجمة التلقائية.", stats: [
+      { label: "اللغة الافتراضية", value: "العربية", tone: "orange" },
+      { label: "اللغات المتاحة", value: "العربية · الإنجليزية · الفرنسية", tone: "emerald" },
+      { label: "الترجمة التلقائية", value: "مفعّلة", tone: "sky" },
+    ] },
+    files: { title: "مكتبة الملفات", subtitle: "ملفات المنصة والوسائط والقوالب.", stats: [
+      { label: "الملفات المخزنة", value: "860", tone: "sky" },
+      { label: "مساحة مستخدمة", value: "2.4 GB", tone: "orange" },
+      { label: "قوالب الوسائط", value: "45", tone: "emerald" },
+    ] },
+    trend: { title: "سوق نفود / مطبخ الترند", subtitle: "قوائم السوق، وتدفقات مطبخ الترند، والأصناف قيد المراجعة.", stats: [
+      { label: "قوائم السوق النشطة", value: "28", tone: "emerald" },
+      { label: "تدفقات مطبخ الترند", value: "9", tone: "orange" },
+      { label: "أصناف بانتظار المراجعة", value: "6", tone: "sky" },
+    ] },
+    security: { title: "أمان الحساب والجلسات", subtitle: "الجلسات النشطة، والتحقق بخطوتين، وسجل تسجيل الدخول.", stats: [
+      { label: "الجلسات النشطة", value: "142", tone: "sky" },
+      { label: "التحقق بخطوتين (MFA)", value: "مفعّل", tone: "emerald" },
+      { label: "محاولات دخول مشبوهة", value: "0", tone: "rose" },
+    ] },
+    health: { title: "صحة النظام", subtitle: "حالة الخادم وقاعدة البيانات وزمن الاستجابة.", stats: [
+      { label: "قاعدة البيانات", value: "متصلة", tone: "emerald" },
+      { label: "زمن الاستجابة", value: "48ms", tone: "orange" },
+      { label: "وقت التشغيل", value: "99.98%", tone: "sky" },
+    ] },
+  },
+  en: {
+    superAdmin: { title: "Super Admin", subtitle: "Platform super admins, roles, and operation logs.", stats: [
+      { label: "Current Admins", value: "4", tone: "sky" },
+      { label: "Pending Upgrade Requests", value: "2", tone: "orange" },
+      { label: "Today's Operation Log", value: "1,204", tone: "emerald" },
+    ] },
+    accounts: { title: "Accounts Management", subtitle: "Restaurant, team, and permission accounts.", stats: [
+      { label: "Total Accounts", value: "1,760", tone: "sky" },
+      { label: "New This Month", value: "86", tone: "emerald" },
+      { label: "Suspended Accounts", value: "12", tone: "rose" },
+    ] },
+    settings: { title: "General Settings", subtitle: "Core platform, site, and appearance settings.", stats: [
+      { label: "Site Language", value: "Arabic", tone: "orange" },
+      { label: "Default Currency", value: "SAR", tone: "emerald" },
+      { label: "Maintenance Mode", value: "Off", tone: "sky" },
+    ] },
+    languages: { title: "Languages & Translation", subtitle: "Default site language and auto-translation options.", stats: [
+      { label: "Default Language", value: "Arabic", tone: "orange" },
+      { label: "Available Languages", value: "Arabic · English · French", tone: "emerald" },
+      { label: "Auto Translation", value: "Enabled", tone: "sky" },
+    ] },
+    files: { title: "File Library", subtitle: "Platform files, media, and templates.", stats: [
+      { label: "Stored Files", value: "860", tone: "sky" },
+      { label: "Storage Used", value: "2.4 GB", tone: "orange" },
+      { label: "Media Templates", value: "45", tone: "emerald" },
+    ] },
+    trend: { title: "NFOOD Market / Trend Kitchen", subtitle: "Market listings, Trend Kitchen streams, and dishes in review.", stats: [
+      { label: "Active Market Listings", value: "28", tone: "emerald" },
+      { label: "Trend Kitchen Streams", value: "9", tone: "orange" },
+      { label: "Dishes Awaiting Review", value: "6", tone: "sky" },
+    ] },
+    security: { title: "Security & Sessions", subtitle: "Active sessions, two-factor authentication, and sign-in history.", stats: [
+      { label: "Active Sessions", value: "142", tone: "sky" },
+      { label: "Two-Factor (MFA)", value: "Enabled", tone: "emerald" },
+      { label: "Suspicious Sign-in Attempts", value: "0", tone: "rose" },
+    ] },
+    health: { title: "System Health", subtitle: "Server, database, and latency status.", stats: [
+      { label: "Database", value: "Connected", tone: "emerald" },
+      { label: "Latency", value: "48ms", tone: "orange" },
+      { label: "Uptime", value: "99.98%", tone: "sky" },
+    ] },
+  },
+  fr: {
+    superAdmin: { title: "Super Admin", subtitle: "Super administrateurs de la plateforme, rôles et journaux.", stats: [
+      { label: "Administrateurs actuels", value: "4", tone: "sky" },
+      { label: "Demandes de mise à niveau", value: "2", tone: "orange" },
+      { label: "Journal du jour", value: "1 204", tone: "emerald" },
+    ] },
+    accounts: { title: "Gestion des Comptes", subtitle: "Comptes restaurants, équipes et permissions.", stats: [
+      { label: "Total des comptes", value: "1 760", tone: "sky" },
+      { label: "Nouveaux ce mois-ci", value: "86", tone: "emerald" },
+      { label: "Comptes suspendus", value: "12", tone: "rose" },
+    ] },
+    settings: { title: "Paramètres Généraux", subtitle: "Paramètres de base de la plateforme et du site.", stats: [
+      { label: "Langue du site", value: "Arabe", tone: "orange" },
+      { label: "Devise par défaut", value: "SAR", tone: "emerald" },
+      { label: "Mode maintenance", value: "Désactivé", tone: "sky" },
+    ] },
+    languages: { title: "Langues & Traduction", subtitle: "Langue par défaut et traduction automatique.", stats: [
+      { label: "Langue par défaut", value: "Arabe", tone: "orange" },
+      { label: "Langues disponibles", value: "Arabe · Anglais · Français", tone: "emerald" },
+      { label: "Traduction automatique", value: "Activée", tone: "sky" },
+    ] },
+    files: { title: "Bibliothèque de Fichiers", subtitle: "Fichiers, médias et modèles de la plateforme.", stats: [
+      { label: "Fichiers stockés", value: "860", tone: "sky" },
+      { label: "Stockage utilisé", value: "2,4 GB", tone: "orange" },
+      { label: "Modèles médias", value: "45", tone: "emerald" },
+    ] },
+    trend: { title: "Marché NFOOD / Trend Kitchen", subtitle: "Annonces du marché, flux Trend Kitchen et plats en révision.", stats: [
+      { label: "Annonces actives", value: "28", tone: "emerald" },
+      { label: "Flux Trend Kitchen", value: "9", tone: "orange" },
+      { label: "Plats en attente", value: "6", tone: "sky" },
+    ] },
+    security: { title: "Sécurité & Sessions", subtitle: "Sessions actives, authentification à deux facteurs et historique.", stats: [
+      { label: "Sessions actives", value: "142", tone: "sky" },
+      { label: "Double authentification", value: "Activée", tone: "emerald" },
+      { label: "Tentatives suspectes", value: "0", tone: "rose" },
+    ] },
+    health: { title: "Santé du Système", subtitle: "État du serveur, de la base de données et de la latence.", stats: [
+      { label: "Base de données", value: "Connectée", tone: "emerald" },
+      { label: "Latence", value: "48ms", tone: "orange" },
+      { label: "Disponibilité", value: "99,98 %", tone: "sky" },
+    ] },
   },
 };
 
 type Language = "ar" | "en" | "fr";
+type NavKey = "overview" | "superAdmin" | "accounts" | "settings" | "languages" | "files" | "trend" | "security" | "health";
 type OrderType = { id: string; customer: string; email: string; restaurant: string; status: string; amount: number; date: string; taxId: string };
 
 interface DashboardProps {
@@ -115,11 +251,27 @@ interface DashboardProps {
   currentTheme?: string;
 }
 
-function SidebarLink({ icon, label, active }: { icon: ReactNode; label: string; active?: boolean }) {
+type SectionPanelConfig = {
+  title: string;
+  subtitle: string;
+  stats: { label: string; value: string; tone: "orange" | "emerald" | "violet" | "rose" | "sky" }[];
+};
+
+const toneCls: Record<SectionPanelConfig["stats"][number]["tone"], string> = {
+  orange: "bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400",
+  emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400",
+  violet: "bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400",
+  rose: "bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400",
+  sky: "bg-sky-50 text-sky-600 dark:bg-sky-500/10 dark:text-sky-400",
+};
+
+function SidebarLink({ icon, label, active, onClick }: { icon: ReactNode; label: string; active?: boolean; onClick?: () => void }) {
   return (
     <button
       type="button"
-      className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+      onClick={onClick}
+      aria-current={active ? "page" : undefined}
+      className={`flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
         active
           ? "bg-gradient-to-l from-orange-500/20 to-amber-500/10 text-orange-300 ring-1 ring-orange-500/40"
           : "text-slate-400 hover:bg-white/5 hover:text-white"
@@ -131,6 +283,26 @@ function SidebarLink({ icon, label, active }: { icon: ReactNode; label: string; 
   );
 }
 
+function SectionPanel({ config }: { config?: SectionPanelConfig }) {
+  if (!config) return null;
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700/60 dark:bg-[#1e293b]">
+      <div className="border-b border-slate-100 p-5 dark:border-slate-700/50">
+        <h2 className="text-base font-black">{config.title}</h2>
+        <p className="mt-1 text-[11px] leading-5 text-slate-500 dark:text-slate-400">{config.subtitle}</p>
+      </div>
+      <div className="grid gap-3 p-5 sm:grid-cols-3">
+        {config.stats.map((stat) => (
+          <div key={stat.label} className="rounded-xl bg-slate-50 p-4 dark:bg-slate-900/40">
+            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">{stat.label}</p>
+            <p className={`mt-1.5 inline-flex rounded-full px-2.5 py-1 text-xs font-black ring-1 ring-inset ${toneCls[stat.tone]}`}>{stat.value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function CentralAdminDashboard({ onToggleTheme, currentTheme }: DashboardProps) {
   const themeContext = useTheme();
   const dark = (currentTheme ?? themeContext.theme) === "dark";
@@ -138,6 +310,7 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
 
   const [lang, setLang] = useState<Language>(() => (localStorage.getItem("nfood-lang") as Language) || "ar");
   const [activeTab, setActiveTab] = useState<string>("orders");
+  const [activeNav, setActiveNav] = useState<NavKey>("overview");
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -204,7 +377,7 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-orange-500 to-amber-400 font-bold text-white">NF</div>
               <div>
                 <h1 className="text-lg font-bold tracking-wider text-white">{t.projectName}</h1>
-                <p className="text-xs text-slate-400">CENTRAL ADMIN</p>
+                <p className="text-xs text-slate-400">{t.adminBadge}</p>
               </div>
             </div>
             <button onClick={() => setIsSidebarOpen(false)} className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 lg:hidden">
@@ -213,22 +386,22 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
           </div>
 
           <nav className="flex-1 space-y-1 overflow-y-auto p-4">
-            <SidebarLink icon={<LayoutDashboard size={18} />} label={t.nav_overview} active />
-            <SidebarLink icon={<ShieldAlert size={18} />} label={t.nav_superAdmin} />
-            <SidebarLink icon={<Users size={18} />} label={t.nav_accounts} />
+            <SidebarLink icon={<LayoutDashboard size={18} />} label={t.nav_overview} active={activeNav === "overview"} onClick={() => setActiveNav("overview")} />
+            <SidebarLink icon={<ShieldAlert size={18} />} label={t.nav_superAdmin} active={activeNav === "superAdmin"} onClick={() => setActiveNav("superAdmin")} />
+            <SidebarLink icon={<Users size={18} />} label={t.nav_accounts} active={activeNav === "accounts"} onClick={() => setActiveNav("accounts")} />
             <div className="px-3 pb-1 pt-4 text-xs font-semibold uppercase tracking-wider text-slate-400">{t.settingsGroup}</div>
-            <SidebarLink icon={<Settings size={18} />} label={t.nav_settings} />
-            <SidebarLink icon={<Languages size={18} />} label={t.nav_languages} />
-            <SidebarLink icon={<FolderOpen size={18} />} label={t.nav_files} />
-            <SidebarLink icon={<TrendingUp size={18} />} label={t.nav_trend} />
-            <SidebarLink icon={<ShieldCheck size={18} />} label={t.nav_security} />
-            <SidebarLink icon={<HeartPulse size={18} />} label={t.nav_health} />
+            <SidebarLink icon={<Settings size={18} />} label={t.nav_settings} active={activeNav === "settings"} onClick={() => setActiveNav("settings")} />
+            <SidebarLink icon={<Languages size={18} />} label={t.nav_languages} active={activeNav === "languages"} onClick={() => setActiveNav("languages")} />
+            <SidebarLink icon={<FolderOpen size={18} />} label={t.nav_files} active={activeNav === "files"} onClick={() => setActiveNav("files")} />
+            <SidebarLink icon={<TrendingUp size={18} />} label={t.nav_trend} active={activeNav === "trend"} onClick={() => setActiveNav("trend")} />
+            <SidebarLink icon={<ShieldCheck size={18} />} label={t.nav_security} active={activeNav === "security"} onClick={() => setActiveNav("security")} />
+            <SidebarLink icon={<HeartPulse size={18} />} label={t.nav_health} active={activeNav === "health"} onClick={() => setActiveNav("health")} />
           </nav>
 
           <div className="border-t border-slate-700/50 p-4">
             <div className="flex items-center gap-3 rounded-xl bg-white/5 p-3 text-xs text-slate-300">
               <HeartPulse size={16} className="text-emerald-400" />
-              <span>{t.systemReady} · NFOOD OS</span>
+              <span>{t.systemReady} · {t.osLabel}</span>
             </div>
           </div>
         </aside>
@@ -269,6 +442,8 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
           </header>
 
           <main className="flex-1 space-y-5 overflow-y-auto p-4 sm:p-6">
+            {activeNav === "overview" ? (
+              <>
             {/* بطاقات الأداء */}
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
               {kpis.map((kpi) => {
@@ -434,6 +609,10 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: Dashboard
                 </div>
               </div>
             </div>
+              </>
+            ) : (
+              <SectionPanel config={sectionPanels[lang]?.[activeNav]} />
+            )}
           </main>
         </div>
       </div>
