@@ -39,6 +39,9 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.693.0
         version: 3.907.0
+      '@builder.io/vite-plugin-jsx-loc':
+        specifier: ^0.1.1
+        version: 0.1.1(vite@7.3.6(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6))
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.64.0(react@19.2.1))
@@ -120,6 +123,12 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@19.2.1(@types/react@19.2.1))(@types/react@19.2.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      '@tailwindcss/typography':
+        specifier: ^0.5.15
+        version: 0.5.19(tailwindcss@4.1.14)
+      '@tailwindcss/vite':
+        specifier: ^4.1.3
+        version: 4.1.14(vite@7.3.6(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6))
       '@tanstack/react-query':
         specifier: ^5.90.2
         version: 5.90.2(react@19.2.1)
@@ -138,6 +147,12 @@ importers:
       '@types/web-push':
         specifier: ^3.6.4
         version: 3.6.4
+      '@vitejs/plugin-react':
+        specifier: ^5.0.4
+        version: 5.0.4(vite@7.3.6(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6))
+      autoprefixer:
+        specifier: ^10.4.20
+        version: 10.4.21(postcss@8.5.28)
       axios:
         specifier: ^1.20.0
         version: 1.20.0
@@ -165,6 +180,9 @@ importers:
       embla-carousel-react:
         specifier: ^8.6.0
         version: 8.6.0(react@19.2.1)
+      esbuild:
+        specifier: ^0.28.1
+        version: 0.28.2
       exifr:
         specifier: ^7.1.3
         version: 7.1.3
@@ -201,6 +219,9 @@ importers:
       nodemailer:
         specifier: ^9.1.1
         version: 9.1.1
+      postcss:
+        specifier: ^8.5.23
+        version: 8.5.28
       qrcode.react:
         specifier: ^4.2.0
         version: 4.2.0(react@19.2.1)
@@ -237,12 +258,24 @@ importers:
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
+      tailwindcss:
+        specifier: ^4.1.14
+        version: 4.1.14
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@4.1.14)
+      tw-animate-css:
+        specifier: ^1.4.0
+        version: 1.4.0
       vaul:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.2.1(@types/react@19.2.1))(@types/react@19.2.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      vite:
+        specifier: ^7.3.5
+        version: 7.3.6(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)
+      vite-plugin-manus-runtime:
+        specifier: 0.0.59
+        version: 0.0.59
       web-push:
         specifier: ^3.6.7
         version: 3.6.7
@@ -259,18 +292,9 @@ importers:
         specifier: ^4.1.12
         version: 4.1.12
     devDependencies:
-      '@builder.io/vite-plugin-jsx-loc':
-        specifier: ^0.1.1
-        version: 0.1.1(vite@7.3.6(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6))
       '@playwright/test':
         specifier: ^1.62.1
         version: 1.62.1
-      '@tailwindcss/typography':
-        specifier: ^0.5.15
-        version: 0.5.19(tailwindcss@4.1.14)
-      '@tailwindcss/vite':
-        specifier: ^4.1.3
-        version: 4.1.14(vite@7.3.6(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6))
       '@types/express':
         specifier: 4.17.21
         version: 4.17.21
@@ -289,48 +313,24 @@ importers:
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
-      '@vitejs/plugin-react':
-        specifier: ^5.0.4
-        version: 5.0.4(vite@7.3.6(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6))
       add:
         specifier: ^2.0.6
         version: 2.0.6
-      autoprefixer:
-        specifier: ^10.4.20
-        version: 10.4.21(postcss@8.5.28)
       drizzle-kit:
         specifier: ^0.31.4
         version: 0.31.5
-      esbuild:
-        specifier: ^0.28.1
-        version: 0.28.2
       pnpm:
         specifier: ^10.34.5
         version: 10.34.5
-      postcss:
-        specifier: ^8.5.23
-        version: 8.5.28
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
-      tailwindcss:
-        specifier: ^4.1.14
-        version: 4.1.14
       tsx:
         specifier: ^4.19.1
         version: 4.20.6
-      tw-animate-css:
-        specifier: ^1.4.0
-        version: 1.4.0
       typescript:
         specifier: 5.9.3
         version: 5.9.3
-      vite:
-        specifier: ^7.3.5
-        version: 7.3.6(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)
-      vite-plugin-manus-runtime:
-        specifier: 0.0.59
-        version: 0.0.59
       vitest:
         specifier: ^4.1.11
         version: 4.1.11(@types/node@24.7.0)(vite@7.3.6(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6))
