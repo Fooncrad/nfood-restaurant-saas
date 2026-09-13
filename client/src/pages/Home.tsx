@@ -38,6 +38,7 @@ import { TestLoginScreen } from "@/components/TestLoginScreen";
 import { PasswordResetScreen } from "@/components/PasswordResetScreen";
 import { PlatformOverview } from "@/components/PlatformOverview";
 import { CentralAdminCommandCenter, type CentralAdminNavKey } from "@/components/CentralAdminCommandCenter";
+import { CentralAdminDashboard } from "@/components/CentralAdminDashboard";
 import { PendingTransferBanner } from "@/components/PendingTransferBanner";
 import { HomeSidebar } from "@/components/HomeSidebar";
 import { MobileNavigationDrawer } from "@/components/MobileNavigationDrawer";
@@ -328,20 +329,24 @@ export default function Home() {
   const handleLogout = async () => { await executeLogoutFlow({ logout, closeMenu: () => setProfileOpen(false), redirect: () => { window.location.href = "/"; }, notifySuccess: () => toast.success(t("logout")), notifyError: (message) => toast.error(message) }); };
   const handleSwitchAccount = async () => { await executeSwitchAccountFlow({ logout, closeMenu: () => setProfileOpen(false), startLogin, redirect: () => undefined, notifyError: (message) => toast.error(message) }); };
   if (isCentralAdmin) return (
-    <CentralAdminCommandCenter
-      active={active as CentralAdminNavKey}
-      onNavigate={(key) => setActive(key)}
-      orders={orders}
-      notificationCount={unreadNotificationCount}
-      userName={user.name || user.email || undefined}
-      userEmail={user.email ?? undefined}
-      onLogout={handleLogout}
-      pendingTransferCount={pendingTransferCount}
-      transferBannerDismissed={transferBannerDismissed}
-      onOpenTransfers={() => setActive("admin")}
-      onDismissTransfers={() => setTransferBannerDismissed(true)}
-      overviewChildren={<PlatformOverview onNavigate={() => setActive("admin")} />}
-    />
+    <>
+      {/* اللوحة الأصلية المحفوظة للتراجع السريع — اكتمل الاستبدال بمكوّن CentralAdminDashboard (mock) بقرار المستخدم
+      <CentralAdminCommandCenter
+        active={active as CentralAdminNavKey}
+        onNavigate={(key) => setActive(key)}
+        orders={orders}
+        notificationCount={unreadNotificationCount}
+        userName={user.name || user.email || undefined}
+        userEmail={user.email ?? undefined}
+        onLogout={handleLogout}
+        pendingTransferCount={pendingTransferCount}
+        transferBannerDismissed={transferBannerDismissed}
+        onOpenTransfers={() => setActive("admin")}
+        onDismissTransfers={() => setTransferBannerDismissed(true)}
+        overviewChildren={<PlatformOverview onNavigate={() => setActive("admin")} />}
+      /> */}
+      <CentralAdminDashboard currentTheme={theme} onToggleTheme={toggleTheme} />
+    </>
   );
   return (
     <div dir={direction} lang={language} className={`h-dvh min-h-0 overflow-hidden bg-[#f6f7f9] nfood-dashboard-shell ${isCentralAdmin ? "nfood-central-admin" : ""} text-[#182230] transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100`}>

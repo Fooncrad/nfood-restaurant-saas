@@ -14,7 +14,7 @@ export function languageStorageKey(pathname?: string) { const currentPath = path
 export const UI_LANGUAGES = ["ar", "en", "fr"] as const;
 export type UiLanguage = (typeof UI_LANGUAGES)[number];
 export function isUiLanguage(value: unknown): value is UiLanguage { return UI_LANGUAGES.includes(value as UiLanguage); }
-export function detectVisitorLanguage(): Language { if (typeof window === "undefined") return "en"; const browser = window.navigator.language.toLowerCase().split("-")[0]; return isUiLanguage(browser) ? browser : "en"; }
+export function detectVisitorLanguage(): Language { if (typeof window === "undefined") return "ar"; const browser = window.navigator.language.toLowerCase().split("-")[0]; return isUiLanguage(browser) ? browser : "ar"; }
 
 function animateLanguageChange() {
   if (typeof document === "undefined") return;
@@ -1288,7 +1288,7 @@ export function createTranslator(language: Language) {
 type LanguageContextValue = { language: Language; direction: "rtl" | "ltr"; locale: string; isLanguageChanging: boolean; setLanguage: (language: Language, persist?: boolean) => void; t: (key: TranslationKey | string, variables?: Record<string, string | number>) => string; formatDate: (value: Date | string | number) => string; formatNumber: (value: number) => string };
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
-function readStoredLanguage(): Language { if (typeof window === "undefined") return "en"; if (isPublicLanguagePath(window.location.pathname)) { const manual = window.localStorage.getItem(MENU_LANGUAGE_MANUAL_STORAGE_KEY); if (isUiLanguage(manual)) return manual; return detectVisitorLanguage(); } const stored = window.localStorage.getItem(DASHBOARD_LANGUAGE_STORAGE_KEY); return isUiLanguage(stored) ? stored : "en"; }
+function readStoredLanguage(): Language { if (typeof window === "undefined") return "ar"; if (isPublicLanguagePath(window.location.pathname)) { const manual = window.localStorage.getItem(MENU_LANGUAGE_MANUAL_STORAGE_KEY); if (isUiLanguage(manual)) return manual; return detectVisitorLanguage(); } const stored = window.localStorage.getItem(DASHBOARD_LANGUAGE_STORAGE_KEY); return isUiLanguage(stored) ? stored : "ar"; }
 
 export function applyLanguageDocumentAttributes(language: Language, root: Document = document) {
   const meta = languageMeta[language];

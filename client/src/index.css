@@ -5771,3 +5771,7 @@ main.nfood-display-root .nfood-display-image { display: block !important; positi
 .nfood-central-admin .nfood-admin-overview > .grid {
   align-items: stretch;
 }
+#gt_float_wrapper {
+  top: 5rem !important;
+  z-index: 20 !important;
+}
