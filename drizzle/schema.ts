@@ -1744,9 +1744,15 @@ export const digitalCatalogs = mysqlTable("digital_catalogs", {
   catalogUrl: text("catalog_url").notNull(),
   isPublic: boolean("is_public").default(true).notNull(),
   totalItems: int("total_items").default(0).notNull(),
+  catalogEnabled: boolean("catalog_enabled").default(true).notNull(),
+  isFreelancer: boolean("is_freelancer").default(false).notNull(),
+  isPhotographer: boolean("is_photographer").default(false).notNull(),
+  storageUsed: int("storage_used").default(0).notNull(),
+  storageLimit: int("storage_limit").default(1024).notNull(),
   lastSyncedAt: timestamp("last_synced_at").defaultNow(),
 }, (table) => ({
   digitalCatalogsEntityIdx: index("digital_catalogs_entity_idx").on(table.entityId),
+  digitalCatalogsStorageIdx: index("digital_catalogs_storage_idx").on(table.isFreelancer, table.isPhotographer),
 }));
 
 export const governanceAuditLogs = mysqlTable("governance_audit_logs", {
