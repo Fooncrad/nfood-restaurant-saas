@@ -5,7 +5,7 @@ import {
   Bell, Sun, Moon, Globe, ArrowUpRight, ArrowDownRight, Plus,
   UserCheck, X, FileText, Menu, CheckCircle2, Apple, ShoppingCart,
   Shirt, Car, Scissors, HardHat, Eye, ToggleLeft, ToggleRight,
-  ArrowUpCircle, ExternalLink, Waves, Sparkles, HardDrive, Camera,
+  ArrowUpCircle, ExternalLink, Waves, Sparkles, HardDrive, Camera, LockKeyhole,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
@@ -18,7 +18,7 @@ const translations = {
     card_restaurants: 'المنشآت النشطة', card_accounts: 'الحسابات الكلية', card_subscriptions: 'الاشتراكات الفعالة', card_notifications: 'التنبيهات العاجلة', card_transfers: 'التحويلات المعلقة', card_files: 'ملفات السيرفر',
     table_title: 'منظومة حوكمة القدرات وتغيير الباقات بضغطة زر', table_subtitle: 'تنشيط وإيقاف القطاعات، تعديل الحزم الفورية، مراجعة الحسابات، ومعاينة القوائم الإلكترونية الحية',
     th_orderNum: 'المعرف الرقمي', th_customer: 'الجهة / المنشأة', th_restaurant: 'النوع / القطاع', th_status: 'الحالة التشغيلية', th_amount: 'الحزمة الحالية', th_lastUpdate: 'آخر تحديث', th_actions: 'إجراءات الحوكمة السريعة', btn_viewDetails: 'معاينة حية',
-    tab_companies: 'الشركات والمتاجر', tab_creators: 'المبدعون والمصورون', th_storage: 'التخزين السحابي', badge_photographer: 'مصور', btn_seed_data: 'تجهيز بيانات تجريبية', seed_success: 'تم تجهيز بيانات المبدعين التجريبية', seed_failed: 'فشل تجهيز البيانات التجريبية', toggling_catalog: 'تبديل الكتالوج...', catalog_toggle: 'تفعيل / إيقاف الكتالوج',
+    tab_companies: 'الشركات والمتاجر', tab_creators: 'المبدعون والمصورون', th_storage: 'التخزين السحابي', badge_photographer: 'مصور', btn_seed_data: 'تجهيز بيانات تجريبية', seed_success: 'تم تجهيز بيانات المبدعين التجريبية', seed_failed: 'فشل تجهيز البيانات التجريبية', toggling_catalog: 'تبديل الكتالوج...', catalog_toggle: 'تفعيل / إيقاف الكتالوج', storage_upgrade: 'رقية المساحة', storage_locked: 'ممتلئ - الرفع مقفل', storage_locked_hint: 'المساحة ممتلئة، ارفع الحد لاستئناف الرفع',
     status_pending: 'قيد المراجعة', status_completed: 'نشط وفعال', summary_title: 'مفاتيح تنشيط القدرات والقطاعات', sum_total: 'تفعيل إضافات العملاء', sum_active: 'تفعيل تفرع المطاعم', sum_profiles: 'تفعيل قواميس الترجمة',
     btn_manageCustomers: 'تنشيط كافة الوظائف', btn_addCustomer: 'إضافة منشأة جديدة', currency: 'ريال', modal_title: 'معاينة الكتالوج الرقمي والتدقيق التشغيلي والمستندي', modal_close: 'إغلاق المعاينة', modal_tax: 'الرقم الضريبي / السجل التجاري', modal_transfer_status: 'حالة ترخيص الخدمة',
     loading: 'جارٍ تحميل البيانات الحية...', empty: 'لا توجد منشآت ضمن النطاق المحدد', plan_now: 'الأعلى', plan_upgrade: 'ترقية الحزمة الآن', toggling: 'تبديل الحالة...', upgrading: 'ترقية...', actionToggle: 'تفعيل / إيقاف', planLook: 'الحزمة الحالية',
@@ -30,7 +30,7 @@ const translations = {
     card_restaurants: 'Active Entities', card_accounts: 'Total Accounts', card_subscriptions: 'Active Licenses', card_notifications: 'Urgent Alerts', card_transfers: 'Pending Transfers', card_files: 'Server Storage',
     table_title: 'Ecosystem Control & Plan Upgrade Panel', table_subtitle: 'Activate/deactivate business modules, switch tier plans instantly, audit billing, and preview digital menus',
     th_orderNum: 'Entity ID', th_customer: 'Entity / Client', th_restaurant: 'Type / Sector', th_status: 'Operational Status', th_amount: 'Current Plan', th_lastUpdate: 'Last Update', th_actions: 'Governance Actions', btn_viewDetails: 'Preview Live Menu',
-    tab_companies: 'Companies & Stores', tab_creators: 'Creators & Photographers', th_storage: 'Cloud Storage', badge_photographer: 'Photographer', btn_seed_data: 'Seed Demo Data', seed_success: 'Demo creator data seeded', seed_failed: 'Failed to seed demo data', toggling_catalog: 'Toggling catalog...', catalog_toggle: 'Toggle Catalog',
+    tab_companies: 'Companies & Stores', tab_creators: 'Creators & Photographers', th_storage: 'Cloud Storage', badge_photographer: 'Photographer', btn_seed_data: 'Seed Demo Data', seed_success: 'Demo creator data seeded', seed_failed: 'Failed to seed demo data', toggling_catalog: 'Toggling catalog...', catalog_toggle: 'Toggle Catalog', storage_upgrade: 'Upgrade Storage', storage_locked: 'Full - Upload Locked', storage_locked_hint: 'Storage is full, raise the limit to resume uploading',
     status_pending: 'Pending Review', status_completed: 'Active & Enabled', summary_title: 'Feature Flags & Master Toggles', sum_total: 'Enable Customer Addons', sum_active: 'Enable Multi-Branching', sum_profiles: 'Enable Transliteration',
     btn_manageCustomers: 'Activate All Capabilities', btn_addCustomer: 'Add New Entity', currency: 'SAR', modal_title: 'Menu Preview & Compliance Audit', modal_close: 'Close Preview', modal_tax: 'Tax ID / Commercial Registry', modal_transfer_status: 'Service Licensing Status',
     loading: 'Loading live data...', empty: 'No entities in the current scope', plan_now: 'Top', plan_upgrade: 'Upgrade Plan Now', toggling: 'Toggling status...', upgrading: 'Upgrading...', actionToggle: 'Toggle Status', planLook: 'Current Plan',
@@ -42,7 +42,7 @@ const translations = {
     card_restaurants: 'Entités Actives', card_accounts: 'Comptes Totaux', card_subscriptions: 'Licences Actives', card_notifications: 'Alertes Urgentes', card_transfers: 'Transferts En Attente', card_files: 'Stockage Serveur',
     tab_orders: 'Commandes & Opérations', tab_customers: 'Intégration Clients', tab_purchases: 'Restaurants & Abonnements', tab_shipping: 'Livraison & Cartes NFC', table_title: 'Gestion des Capacités & Forfaits en 1-Clic', table_subtitle: 'Activer/désactiver les modules, changer de forfait instantanément et prévisualiser les catalogues',
     th_orderNum: 'ID Entité', th_customer: 'Entité / Client', th_restaurant: 'Type / Secteur', th_status: 'Statut Opérationnel', th_amount: 'Forfait Actuel', th_lastUpdate: 'Dernière Mise à Jour', th_actions: 'Actions de Gouvernance', btn_viewDetails: 'Aperçu Menu',
-    tab_companies: 'Entreprises & Magasins', tab_creators: 'Créateurs & Photographes', th_storage: 'Stockage Cloud', badge_photographer: 'Photographe', btn_seed_data: 'Générer Données Démo', seed_success: 'Données des créateurs générées', seed_failed: 'Échec de la génération', toggling_catalog: 'Bascule du catalogue...', catalog_toggle: 'Basculer le Catalogue',
+    tab_companies: 'Entreprises & Magasins', tab_creators: 'Créateurs & Photographes', th_storage: 'Stockage Cloud', badge_photographer: 'Photographe', btn_seed_data: 'Générer Données Démo', seed_success: 'Données des créateurs générées', seed_failed: 'Échec de la génération', toggling_catalog: 'Bascule du catalogue...', catalog_toggle: 'Basculer le Catalogue', storage_upgrade: 'Augmenter le Stockage', storage_locked: 'Plein - Dépôt Bloqué', storage_locked_hint: 'Stockage plein, augmentez la limite pour reprendre',
     status_pending: 'En Révision', status_completed: 'Actif & Activé', summary_title: 'Flags de Fonctionnalités', sum_total: 'Activer Addons Clients', sum_active: 'Activer Multi-Branches', sum_profiles: 'Activer Traduction Automatique',
     btn_manageCustomers: 'Activer Toutes les Fonctions', btn_addCustomer: 'Ajouter une Entité', currency: 'EUR', modal_title: 'Aperçu du Menu & Audit de Conformité', modal_close: 'Fermer l\'Aperçu', modal_tax: 'ID Fiscal / Registre du Commerce', modal_transfer_status: 'Statut de Licence de Service',
     loading: 'Chargement des données en direct...', empty: 'Aucune entité dans ce périmètre', plan_now: 'Top', plan_upgrade: 'Mettre à Niveau le Forfait', toggling: 'Bascule du statut...', upgrading: 'Mise à niveau...', actionToggle: 'Basculer le Statut', planLook: 'Forfait Actuel',
@@ -100,6 +100,7 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: { onToggl
   const [activeTab, setActiveTab] = useState<'orders' | 'freelancers'>('orders');
   const [features, setFeatures] = useState({ customers: true, restaurants: true, translations: false });
   const [selectedPlan, setSelectedPlan] = useState<'Basic' | 'Pro' | 'Enterprise'>('Basic');
+  const [upgradeMenuId, setUpgradeMenuId] = useState<string | null>(null);
 
   const t = translations[lang];
 
@@ -120,6 +121,11 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: { onToggl
   const toggleCatalogMutation = trpc.admin.toggleFreelancerCatalog.useMutation({
     onSuccess: () => { toast.success(lang === 'ar' ? 'تم تحديث حالة كتالوج المبدع بنجاح' : lang === 'en' ? 'Creator catalog updated' : 'Catalogue du créateur mis à jour'); refetch(); },
     onError: () => toast.error(lang === 'ar' ? 'فشل تحديث حالة كتالوج المبدع' : lang === 'en' ? 'Failed to update creator catalog' : 'Échec de mise à jour du catalogue'),
+  });
+
+  const upgradeStorageMutation = trpc.admin.upgradeStorageLimit.useMutation({
+    onSuccess: (data) => { toast.success(lang === 'ar' ? `تمت ترقية مساحة التخزين إلى ${data.nextLimitMb} MB برسوم ${data.fee} ريال — الفاتورة ${data.invoiceNumber}` : lang === 'en' ? `Storage upgraded to ${data.nextLimitMb} MB · Fee ${data.fee} SAR — Invoice ${data.invoiceNumber}` : `Stockage passé à ${data.nextLimitMb} Mo · Frais ${data.fee} SAR — Facture ${data.invoiceNumber}`); setUpgradeMenuId(null); refetch(); },
+    onError: () => toast.error(lang === 'ar' ? 'فشلت ترقية مساحة التخزين (راجع الحد المطلوب)' : lang === 'en' ? 'Storage upgrade failed (check requested limit)' : 'Échec de l\'augmentation du stockage (vérifiez la limite)'),
   });
 
   const seedDemoMutation = trpc.admin.seedPlatformDemoData.useMutation({
@@ -367,17 +373,55 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: { onToggl
                             </td>
                             {activeTab === 'freelancers' && (
                               <td className="px-5 py-4">
-                                <div className="flex min-w-[120px] flex-col gap-1.5">
+                                <div className="flex min-w-[150px] flex-col gap-1.5">
                                   <span className={`inline-flex items-center gap-1 text-[10px] font-black ${order.catalogEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'}`}>
                                     <HardDrive size={11} />
                                     {order.catalogEnabled ? t.status_completed : t.status_pending}
                                   </span>
                                   <div className="flex items-center gap-2">
                                     <div className="h-1.5 w-20 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                                      <div className="h-full rounded-full bg-gradient-to-r from-orange-500 to-amber-400" style={{ width: `${Math.min(100, Math.round((order.storageUsed / Math.max(order.storageLimit, 1)) * 100))}%` }} />
+                                      <div className={`h-full rounded-full ${order.storageUsed >= order.storageLimit ? 'bg-gradient-to-r from-rose-500 to-red-400' : 'bg-gradient-to-r from-orange-500 to-amber-400'}`} style={{ width: `${Math.min(100, Math.round((order.storageUsed / Math.max(order.storageLimit, 1)) * 100))}%` }} />
                                     </div>
                                     <span className="text-[9px] font-bold text-slate-400" dir="ltr">{order.storageUsed} / {order.storageLimit} MB</span>
                                   </div>
+                                  <div className="flex flex-wrap items-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => setUpgradeMenuId(upgradeMenuId === order.id ? null : order.id)}
+                                      disabled={upgradeStorageMutation.isPending}
+                                      title={t.storage_locked_hint}
+                                      className={`flex cursor-pointer items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-black ring-1 ring-inset transition disabled:opacity-50 ${order.storageUsed >= order.storageLimit ? 'bg-rose-50 text-rose-600 ring-rose-200 hover:bg-rose-100 dark:bg-rose-500/10 dark:text-rose-400 dark:ring-rose-500/30 dark:hover:bg-rose-500/20' : 'bg-orange-50 text-orange-600 ring-orange-200 hover:bg-orange-100 dark:bg-orange-500/10 dark:text-orange-400 dark:ring-orange-500/30 dark:hover:bg-orange-500/20'}`}
+                                    >
+                                      <ArrowUpCircle size={11} />
+                                      {t.storage_upgrade}
+                                    </button>
+                                    {upgradeMenuId === order.id && (
+                                      <div className="flex flex-col gap-1 rounded-lg border border-slate-200 bg-white p-1.5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                                        {[2, 5, 10].map((gb) => {
+                                          const targetLimitMb = order.storageLimit + gb * 1024;
+                                          const fee = gb * 20;
+                                          return (
+                                            <button
+                                              key={gb}
+                                              type="button"
+                                              onClick={() => upgradeStorageMutation.mutate({ entityId: order.id, targetLimitMb })}
+                                              disabled={upgradeStorageMutation.isPending}
+                                              className="flex cursor-pointer items-center justify-between gap-3 rounded-md px-2 py-1 text-[10px] font-bold text-slate-600 transition hover:bg-orange-50 dark:text-slate-300 dark:hover:bg-orange-500/10"
+                                            >
+                                              <span dir="ltr">+{gb} GB</span>
+                                              <span className="text-orange-600 dark:text-orange-400">{fee} SAR</span>
+                                            </button>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
+                                  </div>
+                                  {order.storageUsed >= order.storageLimit && (
+                                    <span className="inline-flex items-center gap-1 text-[9px] font-black text-rose-500 dark:text-rose-400">
+                                      <LockKeyhole size={9} />
+                                      {t.storage_locked}
+                                    </span>
+                                  )}
                                 </div>
                               </td>
                             )}
