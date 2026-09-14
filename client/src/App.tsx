@@ -63,7 +63,9 @@ const FavoritesPage = lazy(routeLoaders.FavoritesPage);
 const SubscriptionReceiptsAdminPage = lazy(routeLoaders.SubscriptionReceiptsAdminPage);
 const TranslationEditorPage = lazy(routeLoaders.TranslationEditorPage);
 const CustomerProfileSettingsRoute = () => <CustomerProfileSettings />;
-import { PricingPage, FeaturesPage, HowItWorksPage, LandingPage, LegalPage, ContactPage, SubscriptionStatusPage } from "./pages/PublicInfoPages";
+import PublicHome from "./pages/PublicHome";
+import LoginPage from "./pages/LoginPage";
+import { PricingPage, FeaturesPage, HowItWorksPage, LegalPage, ContactPage, SubscriptionStatusPage } from "./pages/PublicInfoPages";
 import { useAuth } from "./_core/hooks/useAuth";
 
 function PageLoading() {
@@ -110,7 +112,7 @@ function AppContent() {
 
 const RESTAURANT_AREA_ROLES = new Set(["restaurant_admin", "waiter", "driver", "cashier", "kitchen", "bar", "restaurant"]);
 function CustomerAreaGuard({ children }: { children: ReactNode }) { const { user, loading } = useAuth(); const [, navigate] = useLocation(); const role = String(user?.testRole ?? user?.role ?? ""); const blocked = Boolean(user && RESTAURANT_AREA_ROLES.has(role)); useEffect(() => { if (blocked) navigate("/restaurant/dashboard"); }, [blocked, navigate]); if (loading || blocked) return <PageLoading />; return <>{children}</>; }
-function RootRoute() { const { user, loading } = useAuth(); if (loading) return <PageLoading />; return user ? <Home /> : <LandingPage />; }
+function RootRoute() { const { user, loading } = useAuth(); if (loading) return <PageLoading />; return user ? <Home /> : <PublicHome />; }
 
 function Router() {
   return (
@@ -121,7 +123,7 @@ function Router() {
       <Route path="/dashboard" component={RootRoute} />
       <Route path="/restaurant/dashboard" component={RootRoute} />
       <Route path="/restaurant/account" component={RootRoute} />
-      <Route path="/login" component={Home} />
+      <Route path="/login" component={LoginPage} />
       <Route path="/register" component={Home} />
       <Route path="/customer-register" component={CustomerRegister} />
       <Route path="/content-market" component={ContentMarketplace} />
