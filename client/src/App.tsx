@@ -65,6 +65,7 @@ const TranslationEditorPage = lazy(routeLoaders.TranslationEditorPage);
 const CustomerProfileSettingsRoute = () => <CustomerProfileSettings />;
 import PublicHome from "./pages/PublicHome";
 import LoginPage from "./pages/LoginPage";
+import RegisterScreen from "./pages/RegisterScreen";
 import { PricingPage, FeaturesPage, HowItWorksPage, LegalPage, ContactPage, SubscriptionStatusPage } from "./pages/PublicInfoPages";
 import { useAuth } from "./_core/hooks/useAuth";
 
@@ -124,12 +125,12 @@ function Router() {
       <Route path="/restaurant/dashboard" component={RootRoute} />
       <Route path="/restaurant/account" component={RootRoute} />
       <Route path="/login" component={LoginPage} />
-      <Route path="/register" component={Home} />
+      <Route path="/register" component={RegisterScreen} />
       <Route path="/customer-register" component={CustomerRegister} />
       <Route path="/content-market" component={ContentMarketplace} />
       <Route path="/creator-content" component={CreatorContentStatus} />
       <Route path="/admin/content-moderation" component={PlatformContentModeration} />
-      <Route path="/restaurant/register" component={Home} />
+      <Route path="/restaurant/register" component={RegisterScreen} />
       <Route path="/pricing" component={PricingPage} />
       <Route path="/features" component={FeaturesPage} />
       <Route path="/how-it-works" component={HowItWorksPage} />
