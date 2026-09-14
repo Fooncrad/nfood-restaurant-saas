@@ -516,7 +516,7 @@ export async function getMerchantRestaurantId(userId: number) {
   if (!db) return null;
   const rows = await db.select({ restaurantId: restaurantMembers.restaurantId, roleName: roles.name }).from(restaurantMembers).leftJoin(roles, eq(restaurantMembers.roleId, roles.id)).where(eq(restaurantMembers.userId, userId));
   const merchant = rows.find((row) => /admin|manager|owner|merchant|تاجر|مدير|مالك|مشرف/i.test(row.roleName ?? ""));
-  return merchant?.restaurantId ?? null;
+  return merchant?.restaurantId ?? rows[0]?.restaurantId ?? null;
 }
 
 export async function listContentLibraryForBuyer(buyerUserId: number) {
