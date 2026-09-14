@@ -22,6 +22,10 @@ import { ReservationsView } from "@/pages/ReservationsView";
 import { PlatformSettingsPanel } from "@/components/PlatformSettingsPanel";
 import { CentralAdminCommandCenter, type CentralAdminNavKey } from "@/components/CentralAdminCommandCenter";
 import { RestaurantCommandCenter } from "@/components/RestaurantCommandCenter";
+import AccountManagementPanel from "@/components/AccountManagementPanel";
+import { UiTranslationAdminPanel } from "@/components/UiTranslationAdminPanel";
+import { MediaLibraryPanel } from "@/components/MediaLibraryPanel";
+import ContentMarketplace from "@/pages/ContentMarketplace";
 
 type OrderStatus = "new" | "preparing" | "ready" | "completed";
 type NavKey = "overview" | "admin" | "branches" | "orders" | "pos" | "kds" | "menu" | "tables" | "inventory" | "team" | "marketing" | "reservations" | "remote" | "security" | "health" | "accounts" | "settings" | "languages" | "files" | "trend";
@@ -64,6 +68,20 @@ export default function Home() {
   useEffect(() => { const restaurants = restaurantsQuery.data ?? []; if (!restaurants.length) return; const available = restaurants.some((restaurant) => restaurant.id === selectedRestaurantId); const nextId = available ? selectedRestaurantId : restaurants[0].id; if (nextId !== selectedRestaurantId) setSelectedRestaurantId(nextId); window.localStorage.setItem("nfood-selected-restaurant", String(nextId)); }, [restaurantsQuery.data, selectedRestaurantId]);
   const workspaceState = getWorkspaceState(restaurantsQuery.data ?? [], selectedRestaurantId);
   const isCentralAdmin = user?.role === "admin" && !user?.testRole;
+  const adminPanelChildren = useMemo(() => {
+    switch (active as CentralAdminNavKey) {
+      case "admin": return <SuperAdminView />;
+      case "accounts": return <AccountManagementPanel />;
+      case "settings": return <PlatformSettingsPanel />;
+      case "languages": return <UiTranslationAdminPanel />;
+      case "files": return <MediaLibraryPanel isCentralAdmin />;
+      case "trend": return <ContentMarketplace />;
+      case "security": return <SecurityView />;
+      case "health": return <SystemHealthView />;
+      case "overview": return undefined;
+    }
+  }, [active]);
+  const adminPanelProps = isCentralAdmin ? { children: adminPanelChildren } : {};
   const workspaceReady = Boolean(user && workspaceState === "ready");
   useEffect(() => { if (isCentralAdmin) setActive("admin"); }, [isCentralAdmin]);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -133,16 +151,17 @@ export default function Home() {
     updateOrderStatus.mutate({ restaurantId: selectedRestaurantId, orderId: numericId, status: next });
   };
 
+  const handleLogout = async () => { await executeLogoutFlow({ logout, closeMenu: () => setProfileOpen(false), redirect: () => { window.location.href = "/"; }, notifySuccess: () => toast.success("تم تسجيل الخروج"), notifyError: (message) => toast.error(message) }); };
+  const handleSwitchAccount = async () => { await executeSwitchAccountFlow({ logout, closeMenu: () => setProfileOpen(false), startLogin, redirect: () => undefined, notifyError: (message) => toast.error(message) }); };
+
   if (loading) return <div dir="rtl" className="flex min-h-screen items-center justify-center bg-[#f6f7f9] text-slate-500">جارٍ التحقق من الجلسة...</div>;
     if (!user) return <TestLoginScreen email={testEmail} password={testPassword} setEmail={setTestEmail} setPassword={setTestPassword} onSubmit={() => testLogin.mutate({ email: testEmail, password: testPassword })} pending={testLogin.isPending} onOAuth={() => startLogin()} />;
-  if (restaurantsQuery.isError && !isCentralAdmin) return <div dir="rtl" className="flex min-h-screen items-center justify-center bg-[#f6f7f9] p-6"><Card className="w-full max-w-lg rounded-3xl border-red-200 bg-white shadow-sm"><CardContent className="p-8 text-center"><Store className="mx-auto mb-4 h-12 w-12 text-red-500" /><h1 className="text-2xl font-bold text-slate-900">تعذر تحميل مساحة العمل</h1><p className="mt-3 text-sm leading-7 text-slate-500">تعذر الوصول إلى بيانات المطاعم الآن. Request ID: restaurants-workspace</p><Button type="button" onClick={() => void restaurantsQuery.refetch()} className="mt-6 rounded-xl bg-[#e76f3c] hover:bg-[#d85f2e]">إعادة المحاولة</Button></CardContent></Card></div>;
-  if (restaurantsQuery.isSuccess && workspaceState === "empty" && !isCentralAdmin) return <div dir="rtl" className="flex min-h-screen items-center justify-center bg-[#f6f7f9] p-6"><Card className="w-full max-w-lg rounded-3xl border-slate-200 bg-white shadow-sm"><CardContent className="p-8 text-center"><Store className="mx-auto mb-4 h-12 w-12 text-[#e76f3c]" /><h1 className="text-2xl font-bold text-slate-900">لا توجد مساحة عمل مرتبطة</h1><p className="mt-3 text-sm leading-7 text-slate-500">حسابك مسجل بنجاح، لكن لا يوجد مطعم مرتبط به حتى الآن. اطلب من مسؤول المنصة إنشاء المطعم أو ربط حسابك به، ثم أعد المحاولة.</p><Button type="button" onClick={() => void restaurantsQuery.refetch()} className="mt-6 rounded-xl bg-[#e76f3c] hover:bg-[#d85f2e]">إعادة المحاولة</Button></CardContent></Card></div>;
-  if (isCentralAdmin) return <CentralAdminCommandCenter active={active as CentralAdminNavKey} onNavigate={(key) => setActive(key as NavKey)} orders={orders} />;
+  if (restaurantsQuery.isError && !isCentralAdmin) return <div dir="rtl" className="flex min-h-screen items-center justify-center bg-[#f6f7f9] p-6"><Card className="w-full max-w-lg rounded-3xl border-red-200 bg-white shadow-sm"><CardContent className="p-8 text-center"><Store className="mx-auto mb-4 h-12 w-12 text-red-500" /><h1 className="text-2xl font-bold text-slate-900">تعذر تحميل مساحة العمل</h1><p className="mt-3 text-sm leading-7 text-slate-500">تعذر الوصول إلى بيانات المطاعم الآن. Request ID: restaurants-workspace</p><div className="mt-6 flex flex-wrap items-center justify-center gap-3"><Button type="button" onClick={() => void restaurantsQuery.refetch()} className="rounded-xl bg-[#e76f3c] hover:bg-[#d85f2e]">إعادة المحاولة</Button><Button type="button" variant="outline" onClick={() => void handleLogout()} className="rounded-xl border-slate-200 text-slate-700">خروج</Button></div></CardContent></Card></div>;
+  if (restaurantsQuery.isSuccess && workspaceState === "empty" && !isCentralAdmin) return <div dir="rtl" className="flex min-h-screen items-center justify-center bg-[#f6f7f9] p-6"><Card className="w-full max-w-lg rounded-3xl border-slate-200 bg-white shadow-sm"><CardContent className="p-8 text-center"><Store className="mx-auto mb-4 h-12 w-12 text-[#e76f3c]" /><h1 className="text-2xl font-bold text-slate-900">لا توجد مساحة عمل مرتبطة</h1><p className="mt-3 text-sm leading-7 text-slate-500">حسابك مسجل بنجاح، لكن لا يوجد مطعم مرتبط به حتى الآن. اطلب من مسؤول المنصة إنشاء المطعم أو ربط حسابك به، ثم أعد المحاولة.</p><div className="mt-6 flex flex-wrap items-center justify-center gap-3"><Button type="button" onClick={() => void restaurantsQuery.refetch()} className="rounded-xl bg-[#e76f3c] hover:bg-[#d85f2e]">إعادة المحاولة</Button><Button type="button" variant="outline" onClick={() => void handleLogout()} className="rounded-xl border-slate-200 text-slate-700">خروج</Button></div></CardContent></Card></div>;
+  if (isCentralAdmin) return <CentralAdminCommandCenter active={active as CentralAdminNavKey} onNavigate={(key) => setActive(key as NavKey)} orders={orders} {...adminPanelProps} />;
   const title = navItems.find((item) => item.key === active)?.label ?? "نظرة عامة";
   const todayLabel = new Date().toLocaleDateString("ar-SA", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const roleDashboardTitle = isCentralAdmin ? "لوحة Super Admin · إدارة المنصة" : ({ restaurant_admin: "صباح الخير، فريق NFOOD", waiter: "لوحة النادل · جاهز لخدمة الضيوف", kitchen: "لوحة المطبخ · الطلبات بانتظار التنفيذ", cashier: "لوحة الكاشير · راقب المدفوعات والطلبات", customer: "مرحباً بك في NFOOD", driver: "لوحة التوصيل · تابع مهامك الحالية" } as Record<string, string>)[user?.testRole ?? "restaurant_admin"] ?? "صباح الخير، فريق NFOOD";
-  const handleLogout = async () => { await executeLogoutFlow({ logout, closeMenu: () => setProfileOpen(false), redirect: () => { window.location.href = "/"; }, notifySuccess: () => toast.success("تم تسجيل الخروج"), notifyError: (message) => toast.error(message) }); };
-  const handleSwitchAccount = async () => { await executeSwitchAccountFlow({ logout, closeMenu: () => setProfileOpen(false), startLogin, redirect: () => undefined, notifyError: (message) => toast.error(message) }); };
   return (
     <div dir="rtl" className="min-h-screen bg-[#f6f7f9] text-[#182230]">
       <aside className="fixed inset-y-0 right-0 z-20 hidden w-[272px] border-l border-slate-200 bg-[#111c2e] text-white lg:flex lg:flex-col">
