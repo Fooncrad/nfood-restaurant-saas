@@ -23,13 +23,14 @@ import { PlatformSettingsPanel } from "@/components/PlatformSettingsPanel";
 import { CentralAdminCommandCenter, type CentralAdminNavKey } from "@/components/CentralAdminCommandCenter";
 import { RestaurantCommandCenter } from "@/components/RestaurantCommandCenter";
 import AccountManagementPanel from "@/components/AccountManagementPanel";
+import MarketplaceStoresView from "@/components/MarketplaceStoresView";
 import { UiTranslationAdminPanel } from "@/components/UiTranslationAdminPanel";
 import { MediaLibraryPanel } from "@/components/MediaLibraryPanel";
 import ContentMarketplace from "@/pages/ContentMarketplace";
 import { StorefrontCustomizationPanel } from "@/components/StorefrontCustomizationPanel";
 
 type OrderStatus = "new" | "preparing" | "ready" | "completed";
-type NavKey = "overview" | "admin" | "branches" | "orders" | "pos" | "kds" | "menu" | "tables" | "inventory" | "team" | "marketing" | "storefront" | "reservations" | "remote" | "security" | "health" | "accounts" | "settings" | "languages" | "files" | "trend";
+type NavKey = "overview" | "admin" | "branches" | "orders" | "pos" | "kds" | "menu" | "tables" | "inventory" | "team" | "marketing" | "storefront" | "reservations" | "remote" | "security" | "health" | "accounts" | "settings" | "languages" | "files" | "stores" | "trend";
 
 type Order = { id: string; table: string; items: string; total: number; status: OrderStatus; time: string; channel: string };
 type InstallPromptEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: "accepted" | "dismissed" }> };
@@ -77,6 +78,7 @@ export default function Home() {
       case "settings": return <PlatformSettingsPanel />;
       case "languages": return <UiTranslationAdminPanel />;
       case "files": return <MediaLibraryPanel isCentralAdmin />;
+      case "stores": return <MarketplaceStoresView />;
       case "trend": return <ContentMarketplace />;
       case "security": return <SecurityView />;
       case "health": return <SystemHealthView />;
@@ -160,7 +162,7 @@ export default function Home() {
     if (!user) return <TestLoginScreen email={testEmail} password={testPassword} setEmail={setTestEmail} setPassword={setTestPassword} onSubmit={() => testLogin.mutate({ email: testEmail, password: testPassword })} pending={testLogin.isPending} onOAuth={() => startLogin()} />;
   if (restaurantsQuery.isError && !isCentralAdmin) return <div dir="rtl" className="flex min-h-screen items-center justify-center bg-[#f6f7f9] p-6"><Card className="w-full max-w-lg rounded-3xl border-red-200 bg-white shadow-sm"><CardContent className="p-8 text-center"><Store className="mx-auto mb-4 h-12 w-12 text-red-500" /><h1 className="text-2xl font-bold text-slate-900">تعذر تحميل مساحة العمل</h1><p className="mt-3 text-sm leading-7 text-slate-500">تعذر الوصول إلى بيانات المطاعم الآن. Request ID: restaurants-workspace</p><div className="mt-6 flex flex-wrap items-center justify-center gap-3"><Button type="button" onClick={() => void restaurantsQuery.refetch()} className="rounded-xl bg-[#e76f3c] hover:bg-[#d85f2e]">إعادة المحاولة</Button><Button type="button" variant="outline" onClick={() => void handleLogout()} className="rounded-xl border-slate-200 text-slate-700">خروج</Button></div></CardContent></Card></div>;
   if (restaurantsQuery.isSuccess && workspaceState === "empty" && !isCentralAdmin) return <div dir="rtl" className="flex min-h-screen items-center justify-center bg-[#f6f7f9] p-6"><Card className="w-full max-w-lg rounded-3xl border-slate-200 bg-white shadow-sm"><CardContent className="p-8 text-center"><Store className="mx-auto mb-4 h-12 w-12 text-[#e76f3c]" /><h1 className="text-2xl font-bold text-slate-900">لا توجد مساحة عمل مرتبطة</h1><p className="mt-3 text-sm leading-7 text-slate-500">حسابك مسجل بنجاح، لكن لا يوجد مطعم مرتبط به حتى الآن. اطلب من مسؤول المنصة إنشاء المطعم أو ربط حسابك به، ثم أعد المحاولة.</p><div className="mt-6 flex flex-wrap items-center justify-center gap-3"><Button type="button" onClick={() => void restaurantsQuery.refetch()} className="rounded-xl bg-[#e76f3c] hover:bg-[#d85f2e]">إعادة المحاولة</Button><Button type="button" variant="outline" onClick={() => void handleLogout()} className="rounded-xl border-slate-200 text-slate-700">خروج</Button></div></CardContent></Card></div>;
-  if (isCentralAdmin) return <CentralAdminCommandCenter active={active as CentralAdminNavKey} onNavigate={(key) => setActive(key as NavKey)} orders={orders} {...adminPanelProps} />;
+  if (isCentralAdmin) return <CentralAdminCommandCenter active={active as CentralAdminNavKey} onNavigate={(key) => setActive(key as NavKey)} orders={orders} userName={user?.name ?? undefined} userEmail={user?.email ?? undefined} onLogout={() => void handleLogout()} {...adminPanelProps} />;
   const title = navItems.find((item) => item.key === active)?.label ?? "نظرة عامة";
   const todayLabel = new Date().toLocaleDateString("ar-SA", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const roleDashboardTitle = isCentralAdmin ? "لوحة Super Admin · إدارة المنصة" : ({ restaurant_admin: "صباح الخير، فريق NFOOD", waiter: "لوحة النادل · جاهز لخدمة الضيوف", kitchen: "لوحة المطبخ · الطلبات بانتظار التنفيذ", cashier: "لوحة الكاشير · راقب المدفوعات والطلبات", customer: "مرحباً بك في NFOOD", driver: "لوحة التوصيل · تابع مهامك الحالية" } as Record<string, string>)[user?.testRole ?? "restaurant_admin"] ?? "صباح الخير، فريق NFOOD";

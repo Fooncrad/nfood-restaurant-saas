@@ -2,6 +2,7 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq, gte, inArray, isNull, lte, or, sql } from "drizzle-orm";
 import {
+  PLAN_TIERS,
   affiliateAccounts,
   affiliateCommissions,
   affiliateLinks,
@@ -23,6 +24,7 @@ import {
 } from "../drizzle/schema";
 import { publicProcedure, protectedProcedure, adminProcedure, platformAdminProcedure, router } from "./_core/trpc";
 import type { TrpcContext } from "./_core/context";
+import { nanoid } from "nanoid";
 import { getDb, getMerchantRestaurantId, insertAuditLog } from "./db";
 import { sendPushToUser } from "./push";
 
@@ -583,6 +585,63 @@ export const marketplaceRouter = router({
     }
     await insertAuditLog({ actorUserId: ctx.user.id, actorRole: ctx.user.role ?? "admin", action: "affiliate.payout.reviewed", entityType: "affiliate_payout_request", entityId: String(input.id), outcome: "success", requestId: String(input.id), metadata: JSON.stringify({ status: input.status }) });
     return { success: true, id: input.id, status: input.status };
+  }),
+
+  adminStores: platformAdminProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) return [];
+    const [stores, listingCounts, couponCounts, sectorRows] = await Promise.all([
+      db.select().from(platformEntities).orderBy(desc(platformEntities.createdAt)),
+      db.select({ entityId: marketplaceListings.entityId, total: sql<number>`count(*)` }).from(marketplaceListings).groupBy(marketplaceListings.entityId),
+      db.select({ entityId: storeCoupons.entityId, total: sql<number>`count(*)` }).from(storeCoupons).groupBy(storeCoupons.entityId),
+      db.select().from(marketplaceSectors),
+    ]);
+    const listingMap = new Map(listingCounts.map((row) => [row.entityId, Number(row.total ?? 0)]));
+    const couponMap = new Map(couponCounts.map((row) => [row.entityId, Number(row.total ?? 0)]));
+    const sectorBySlug = new Map(sectorRows.map((row) => [row.slug, row]));
+    return stores.map((store) => {
+      const sector = sectorBySlug.get(store.sector) ?? null;
+      return {
+        id: store.id,
+        customerName: store.customerName,
+        email: store.email,
+        sector: store.sector,
+        sectorLabelAr: sector?.labelAr ?? store.sector,
+        sectorLabelEn: sector?.labelEn ?? store.sector,
+        sectorLabelFr: sector?.labelFr ?? store.sector,
+        status: store.status,
+        plan: store.plan,
+        taxId: store.taxId,
+        licensingFee: store.licensingFee,
+        createdAt: store.createdAt,
+        updatedAt: store.updatedAt,
+        listings: listingMap.get(store.id) ?? 0,
+        coupons: couponMap.get(store.id) ?? 0,
+      };
+    });
+  }),
+
+  adminUpdateStore: platformAdminProcedure.input(z.object({
+    id: z.string().trim().min(1).max(30),
+    status: z.boolean().optional(),
+    plan: z.enum(PLAN_TIERS).optional(),
+    customerName: z.string().trim().min(1).max(300).optional(),
+    taxId: z.string().trim().min(1).max(50).optional(),
+    licensingFee: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
+  })).mutation(async ({ ctx, input }) => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database is not available" });
+    const existing = (await db.select().from(platformEntities).where(eq(platformEntities.id, input.id)).limit(1))[0];
+    if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "المنشأة غير موجودة" });
+    const patch: { status?: boolean; plan?: (typeof PLAN_TIERS)[number]; customerName?: string; taxId?: string; licensingFee?: string } = {};
+    if (input.status !== undefined) patch.status = input.status;
+    if (input.plan !== undefined) patch.plan = input.plan;
+    if (input.customerName !== undefined) patch.customerName = input.customerName;
+    if (input.taxId !== undefined) patch.taxId = input.taxId;
+    if (input.licensingFee !== undefined) patch.licensingFee = input.licensingFee;
+    await db.update(platformEntities).set(patch).where(eq(platformEntities.id, input.id));
+    await insertAuditLog({ actorUserId: ctx.user.id, actorRole: "admin", action: "marketplace.store.updated", entityType: "platform_entity", entityId: input.id, outcome: "success", requestId: nanoid(12), metadata: JSON.stringify(patch) });
+    return { success: true, id: input.id };
   }),
 
   adminSummary: platformAdminProcedure.query(async () => {

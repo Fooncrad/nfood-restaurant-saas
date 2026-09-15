@@ -31,9 +31,9 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { trpc } from "@/lib/trpc";
 import type { Order } from "@/components/homeNavigation";
 
-export type CentralAdminNavKey = "overview" | "admin" | "accounts" | "settings" | "languages" | "files" | "trend" | "security" | "health";
+export type CentralAdminNavKey = "overview" | "admin" | "accounts" | "settings" | "languages" | "files" | "stores" | "trend" | "security" | "health";
 
-const NAV_ORDER: CentralAdminNavKey[] = ["overview", "admin", "accounts", "settings", "languages", "files", "trend", "security", "health"];
+const NAV_ORDER: CentralAdminNavKey[] = ["overview", "admin", "accounts", "settings", "languages", "files", "stores", "trend", "security", "health"];
 
 const NAV_LABELS: Record<CentralAdminNavKey, { ar: string; en: string }> = {
   overview: { ar: "نظرة عامة", en: "Overview" },
@@ -42,6 +42,7 @@ const NAV_LABELS: Record<CentralAdminNavKey, { ar: string; en: string }> = {
   settings: { ar: "الإعدادات العامة", en: "General settings" },
   languages: { ar: "اللغة والترجمة", en: "Languages" },
   files: { ar: "مكتبة الملفات", en: "Media library" },
+  stores: { ar: "جميع المتاجر", en: "All stores" },
   trend: { ar: "Trend Kitchen · سوق نفود", en: "Trend Kitchen" },
   security: { ar: "أمان الحساب والجلسات", en: "Security" },
   health: { ar: "صحة النظام", en: "System health" },
@@ -54,6 +55,7 @@ const NAV_ICONS: Record<CentralAdminNavKey, LucideIcon> = {
   settings: Settings2,
   languages: Languages,
   files: HardDrive,
+  stores: Store,
   trend: Sparkles,
   security: ShieldCheck,
   health: Activity,
@@ -111,6 +113,8 @@ const COPY_AR = {
   helpBody: "تواصل مع فريق نفود عبر مركز المساعدة أو الدردشة المباشرة.",
   logout: "تسجيل الخروج",
   adminAccount: "حساب الإدارة",
+  publicSite: "الموقع العام",
+  publicSiteHint: "عرض واجهة الموقع كما يراها الزوار",
   notifications: "الإشعارات",
   noTransactions: "لا توجد صفقات مسجلة",
   noCustomers: "لا يوجد عملاء بعد",
@@ -156,6 +160,8 @@ const COPY_EN = {
   helpBody: "Reach the NFOOD team via the help center or live chat.",
   logout: "Sign out",
   adminAccount: "Admin account",
+  publicSite: "Public site",
+  publicSiteHint: "View the site as visitors see it",
   notifications: "Notifications",
   noTransactions: "No transactions recorded",
   noCustomers: "No customers yet",
@@ -722,6 +728,18 @@ export function CentralAdminCommandCenter({
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5 md:gap-2">
+            <a
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              title={copy.publicSite}
+              aria-label={copy.publicSite}
+              className="hidden items-center gap-1.5 rounded-xl border px-3 py-2.5 text-xs font-bold transition hover:bg-orange-500/10 sm:flex"
+              style={{ borderColor: divider, color: textPrimary }}
+            >
+              <Store className="h-4 w-4 text-orange-500" />
+              {copy.publicSite}
+            </a>
             <div className="relative">
               <button
                 type="button"
