@@ -1716,6 +1716,7 @@ export const PLATFORM_SECTOR_KEYS = [
   "beauty_salon",
   "public_works",
   "fashion",
+  "sweets",
 ] as const;
 export type PlatformSectorKey = (typeof PLATFORM_SECTOR_KEYS)[number];
 

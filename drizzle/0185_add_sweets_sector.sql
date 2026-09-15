@@ -1,0 +1,1 @@
+ALTER TABLE `platform_entities` MODIFY COLUMN `sector` enum('restaurant','vegetables','grocery','laundry','automotive','beauty_salon','public_works','fashion','sweets') DEFAULT 'restaurant' NOT NULL;

@@ -6,6 +6,7 @@ import {
   UserCheck, X, FileText, Menu, CheckCircle2, Apple, ShoppingCart,
   Shirt, Car, Scissors, HardHat, Eye, ToggleLeft, ToggleRight,
   ArrowUpCircle, ExternalLink, Waves, Sparkles, HardDrive, Camera, LockKeyhole,
+  Cookie, Megaphone, Send, Pencil, Store,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
@@ -14,7 +15,12 @@ const translations = {
   ar: {
     dir: 'rtl', projectName: 'نفود المشتركة', panelTitle: 'الأدمن المركزي والمؤسسي', panelSubtitle: 'إدارة أفرع الخدمات، القدرات، القطاعات وتعديل حزم الاشتراكات البينية', systemReady: 'النظام حي ومستقر', searchPlaceholder: 'ابحث عن منشأة، طلب، عميل... (Ctrl + K)', adminCenter: 'مركز التحكم', adminBadge: 'بوابة التحكم العليا',
     nav_overview: 'نظرة عامة والعمليات', nav_superAdmin: 'Super Admin', nav_admin: 'الإدارة المركزية', nav_accounts: 'إدارة الحسابات والأدوار', nav_settings: 'الإعدادات العامة', settingsGroup: 'الإعدادات والتخصيص', nav_languages: 'اللغة والترجمة', nav_files: 'مكتبة الملفات المركزية', nav_trend: 'سوق نفود / Trend Kitchen', nav_security: 'أمان الحساب والجلسات', nav_health: 'صحة النظام والـ Logs',
-    nav_future_modules: 'حوكمة القطاعات والوحدات الشاملة (8 وحدات)', nav_veg: 'وحدة الخضار والفواكه', nav_grocery: 'وحدة البقالات والتموينات', nav_laundry: 'وحدة مغاسل الملابس', nav_auto: 'وحدة خدمات السيارات', nav_barber: 'وحدة الصالونات ومراكز التجميل', nav_public: 'وحدة الأشغال العامة والصيانة', nav_fashion: 'وحدة الموضة والأزياء والملبوسات',
+    nav_future_modules: 'حوكمة القطاعات والوحدات الشاملة (8 وحدات)', nav_veg: 'وحدة الخضار والفواكه', nav_grocery: 'وحدة البقالات والتموينات', nav_laundry: 'وحدة مغاسل الملابس', nav_auto: 'وحدة خدمات السيارات', nav_barber: 'وحدة الصالونات ومراكز التجميل', nav_public: 'وحدة الأشغال العامة والصيانة', nav_fashion: 'وحدة الموضة والأزياء والملبوسات', nav_sweets: 'وحدة الحلويات والمخبوزات والتحلية',
+    nav_sectors: 'حوكمة القطاعات',
+    sectors_title: 'لوحة حوكمة القطاعات الشاملة', sectors_subtitle: 'تعديل تسميات القطاعات، التفعيل والإيقاف، والتبليغ الجماعي أو المستهدف للمنشآت والعملاء', sector_status_active: 'مفعّل', sector_status_inactive: 'موقوف', sector_entities: 'منشأة', sector_restaurants: 'مطاعم',
+    btn_edit_labels: 'تعديل التسمية', btn_activate: 'تفعيل', btn_deactivate: 'إيقاف', btn_broadcast: 'رسالة جماعية', btn_notify: 'إرسال تنبيه', btn_save: 'حفظ', btn_cancel: 'إلغاء', btn_close: 'إغلاق',
+    notify_modal_title: 'إرسال إشعار إلى القطاع', notify_broadcast_all: 'إرسال للقطاع كاملاً', notify_targeted: 'إرسال لمنشآت محددة', notify_title_label: 'العنوان', notify_body_label: 'نص الرسالة', notify_type_label: 'نوع الإشعار', notify_select_entities: 'اختر المنشآت المستهدفة', notify_search_placeholder: 'ابحث عن منشأة...', notify_send: 'إرسال الآن', notify_sent: 'تم إرسال الإشعار', notify_failed: 'فشل إرسال الإشعار', notify_type_system: 'نظام', notify_type_message: 'رسالة', notify_type_task: 'مهمة', notify_type_payment: 'دفع', notify_selected: 'محددة',
+    edit_modal_title: 'تعديل بيانات القطاع', edit_label_ar: 'التسمية بالعربية', edit_label_en: 'التسمية بالإنجليزية', edit_label_fr: 'التسمية بالفرنسية', edit_active: 'حالة التفعيل', label_updated: 'تم تحديث تسمية القطاع', label_failed: 'فشل تحديث تسمية القطاع',
     card_restaurants: 'المنشآت النشطة', card_accounts: 'الحسابات الكلية', card_subscriptions: 'الاشتراكات الفعالة', card_notifications: 'التنبيهات العاجلة', card_transfers: 'التحويلات المعلقة', card_files: 'ملفات السيرفر',
     table_title: 'منظومة حوكمة القدرات وتغيير الباقات بضغطة زر', table_subtitle: 'تنشيط وإيقاف القطاعات، تعديل الحزم الفورية، مراجعة الحسابات، ومعاينة القوائم الإلكترونية الحية',
     th_orderNum: 'المعرف الرقمي', th_customer: 'الجهة / المنشأة', th_restaurant: 'النوع / القطاع', th_status: 'الحالة التشغيلية', th_amount: 'الحزمة الحالية', th_lastUpdate: 'آخر تحديث', th_actions: 'إجراءات الحوكمة السريعة', btn_viewDetails: 'معاينة حية',
@@ -26,7 +32,12 @@ const translations = {
   en: {
     dir: 'ltr', projectName: 'NFOOD Ecosystem', panelTitle: 'Central & Enterprise Admin', panelSubtitle: 'Instant feature toggles, business sector activation & subscription plan upgrades', systemReady: 'System Live & Stable', searchPlaceholder: 'Search entities... (Ctrl + K)', adminCenter: 'Control Center', adminBadge: 'Master Control Gateway',
     nav_overview: 'Overview & Ops', nav_superAdmin: 'Super Admin', nav_admin: 'Central Admin', nav_accounts: 'Accounts & Roles', nav_settings: 'General Settings', settingsGroup: 'Settings & Customization', nav_languages: 'Languages & Local', nav_files: 'Central File Library', nav_trend: 'NFOOD Market / Trend Kitchen', nav_security: 'Security & Sessions', nav_health: 'System Health & Logs',
-    nav_future_modules: 'Ecosystem Modules & Governance (8 Units)', nav_veg: 'Vegetables & Fruits Unit', nav_grocery: 'Grocery & Supermarkets', nav_laundry: 'Laundries Unit', nav_auto: 'Automotive Services', nav_barber: 'Beauty Salons & Barbers', nav_public: 'Public Works & Maintenance', nav_fashion: 'Fashion & Apparel Unit',
+    nav_future_modules: 'Ecosystem Modules & Governance (8 Units)', nav_veg: 'Vegetables & Fruits Unit', nav_grocery: 'Grocery & Supermarkets', nav_laundry: 'Laundries Unit', nav_auto: 'Automotive Services', nav_barber: 'Beauty Salons & Barbers', nav_public: 'Public Works & Maintenance', nav_fashion: 'Fashion & Apparel Unit', nav_sweets: 'Sweets, Bakery & Desserts Unit',
+    nav_sectors: 'Sector Governance',
+    sectors_title: 'All-Sector Governance Board', sectors_subtitle: 'Edit sector labels, activate/deactivate modules, and broadcast or target messages to entities & customers', sector_status_active: 'Active', sector_status_inactive: 'Inactive', sector_entities: 'entities', sector_restaurants: 'restaurants',
+    btn_edit_labels: 'Edit Label', btn_activate: 'Activate', btn_deactivate: 'Deactivate', btn_broadcast: 'Broadcast', btn_notify: 'Send Alert', btn_save: 'Save', btn_cancel: 'Cancel', btn_close: 'Close',
+    notify_modal_title: 'Send Notification to Sector', notify_broadcast_all: 'Send to entire sector', notify_targeted: 'Send to selected entities', notify_title_label: 'Title', notify_body_label: 'Message Body', notify_type_label: 'Notification Type', notify_select_entities: 'Select targeted entities', notify_search_placeholder: 'Search entities...', notify_send: 'Send Now', notify_sent: 'Notification sent', notify_failed: 'Failed to send notification', notify_type_system: 'System', notify_type_message: 'Message', notify_type_task: 'Task', notify_type_payment: 'Payment', notify_selected: 'selected',
+    edit_modal_title: 'Edit Sector Settings', edit_label_ar: 'Arabic Label', edit_label_en: 'English Label', edit_label_fr: 'French Label', edit_active: 'Activation Status', label_updated: 'Sector label updated', label_failed: 'Failed to update sector label',
     card_restaurants: 'Active Entities', card_accounts: 'Total Accounts', card_subscriptions: 'Active Licenses', card_notifications: 'Urgent Alerts', card_transfers: 'Pending Transfers', card_files: 'Server Storage',
     table_title: 'Ecosystem Control & Plan Upgrade Panel', table_subtitle: 'Activate/deactivate business modules, switch tier plans instantly, audit billing, and preview digital menus',
     th_orderNum: 'Entity ID', th_customer: 'Entity / Client', th_restaurant: 'Type / Sector', th_status: 'Operational Status', th_amount: 'Current Plan', th_lastUpdate: 'Last Update', th_actions: 'Governance Actions', btn_viewDetails: 'Preview Live Menu',
@@ -38,7 +49,12 @@ const translations = {
   fr: {
     dir: 'ltr', projectName: 'Écosystème NFOOD', panelTitle: 'Admin Central & Entreprise', panelSubtitle: 'Activation instantanée des fonctionnalités, des secteurs et mise à niveau des forfaits', systemReady: 'Système En Ligne', searchPlaceholder: 'Rechercher des entités... (Ctrl + K)', adminCenter: 'Centre de Contrôle', adminBadge: 'Passerelle de Contrôle Maître',
     nav_overview: 'Vue d\'ensemble', nav_superAdmin: 'Super Admin', nav_admin: 'Admin Central', nav_accounts: 'Comptes & Rôles', nav_settings: 'Paramètres Généraux', settingsGroup: 'Paramètres & Personnalisation', nav_languages: 'Langues & Dictionnaire', nav_files: 'Bibliothèque Centrale', nav_trend: 'Marché NFOOD / Trend Kitchen', nav_security: 'Sécurité & Sessions', nav_health: 'Santé du Système & Logs',
-    nav_future_modules: 'Modules Écosystème & Gouvernance (8 Unités)', nav_veg: 'Secteur Fruits & Légumes', nav_grocery: 'Épiceries & Supermarchés', nav_laundry: 'Secteur Blanchisserie', nav_auto: 'Services Automobiles', nav_barber: 'Salons de Beauté & Coiffure', nav_public: 'Travaux Publics & Maintenance', nav_fashion: 'Secteur de la Mode',
+    nav_future_modules: 'Modules Écosystème & Gouvernance (8 Unités)', nav_veg: 'Secteur Fruits & Légumes', nav_grocery: 'Épiceries & Supermarchés', nav_laundry: 'Secteur Blanchisserie', nav_auto: 'Services Automobiles', nav_barber: 'Salons de Beauté & Coiffure', nav_public: 'Travaux Publics & Maintenance', nav_fashion: 'Secteur de la Mode', nav_sweets: 'Secteur Douceurs & Boulangerie',
+    nav_sectors: 'Gouvernance des Secteurs',
+    sectors_title: 'Tableau de Gouvernance des Secteurs', sectors_subtitle: 'Modifier les libellés, activer/désactiver les modules et diffuser des messages ciblés aux entités & clients', sector_status_active: 'Actif', sector_status_inactive: 'Inactif', sector_entities: 'entités', sector_restaurants: 'restaurants',
+    btn_edit_labels: 'Modifier le Libellé', btn_activate: 'Activer', btn_deactivate: 'Désactiver', btn_broadcast: 'Diffuser', btn_notify: 'Envoyer une Alerte', btn_save: 'Enregistrer', btn_cancel: 'Annuler', btn_close: 'Fermer',
+    notify_modal_title: 'Envoyer une Notification au Secteur', notify_broadcast_all: 'Envoyer à tout le secteur', notify_targeted: 'Envoyer aux entités sélectionnées', notify_title_label: 'Titre', notify_body_label: 'Corps du Message', notify_type_label: 'Type de Notification', notify_select_entities: 'Sélectionner les entités ciblées', notify_search_placeholder: 'Rechercher des entités...', notify_send: 'Envoyer', notify_sent: 'Notification envoyée', notify_failed: 'Échec de l\'envoi', notify_type_system: 'Système', notify_type_message: 'Message', notify_type_task: 'Tâche', notify_type_payment: 'Paiement', notify_selected: 'selectionnés',
+    edit_modal_title: 'Modifier les Paramètres du Secteur', edit_label_ar: 'Libellé Arabe', edit_label_en: 'Libellé Anglais', edit_label_fr: 'Libellé Français', edit_active: 'Statut d\'Activation', label_updated: 'Libellé du secteur mis à jour', label_failed: 'Échec de mise à jour du libellé',
     card_restaurants: 'Entités Actives', card_accounts: 'Comptes Totaux', card_subscriptions: 'Licences Actives', card_notifications: 'Alertes Urgentes', card_transfers: 'Transferts En Attente', card_files: 'Stockage Serveur',
     tab_orders: 'Commandes & Opérations', tab_customers: 'Intégration Clients', tab_purchases: 'Restaurants & Abonnements', tab_shipping: 'Livraison & Cartes NFC', table_title: 'Gestion des Capacités & Forfaits en 1-Clic', table_subtitle: 'Activer/désactiver les modules, changer de forfait instantanément et prévisualiser les catalogues',
     th_orderNum: 'ID Entité', th_customer: 'Entité / Client', th_restaurant: 'Type / Secteur', th_status: 'Statut Opérationnel', th_amount: 'Forfait Actuel', th_lastUpdate: 'Dernière Mise à Jour', th_actions: 'Actions de Gouvernance', btn_viewDetails: 'Aperçu Menu',
@@ -50,13 +66,13 @@ const translations = {
 };
 
 type Language = 'ar' | 'en' | 'fr';
-type NavSection = 'overview' | 'admin' | 'accounts' | 'settings' | 'languages' | 'files' | 'trend' | 'security' | 'health' | 'veg' | 'grocery' | 'laundry' | 'auto' | 'barber' | 'public' | 'fashion';
+type NavSection = 'overview' | 'admin' | 'accounts' | 'settings' | 'languages' | 'files' | 'trend' | 'security' | 'health' | 'sectors' | 'veg' | 'grocery' | 'laundry' | 'auto' | 'barber' | 'public' | 'fashion' | 'sweets';
 type OrderType = { id: string; customer: string; email: string; restaurant: string; status: boolean; plan: 'Basic' | 'Pro' | 'Enterprise'; date: string; taxId: string; isFreelancer: boolean; isPhotographer: boolean; catalogEnabled: boolean; storageUsed: number; storageLimit: number; catalog?: { totalItems: number; isPublic: boolean; catalogUrl: string | null; catalogEnabled: boolean; isFreelancer: boolean; isPhotographer: boolean; storageUsed: number; storageLimit: number } | null };
 
 const SECTOR_LABELS: Record<Language, Record<string, string>> = {
-  ar: { restaurant: 'مطاعم', vegetables: 'خضار وفواكه', grocery: 'بقالات', laundry: 'مغاسل', automotive: 'سيارات', beauty_salon: 'صالونات', public_works: 'أشغال عامة', fashion: 'موضة' },
-  en: { restaurant: 'Restaurants', vegetables: 'Vegetables & Fruits', grocery: 'Grocery', laundry: 'Laundries', automotive: 'Automotive', beauty_salon: 'Beauty Salons', public_works: 'Public Works', fashion: 'Fashion' },
-  fr: { restaurant: 'Restaurants', vegetables: 'Fruits & Légumes', grocery: 'Épicerie', laundry: 'Blanchisserie', automotive: 'Automobile', beauty_salon: 'Salons de Beauté', public_works: 'Travaux Publics', fashion: 'Mode' },
+  ar: { restaurant: 'مطاعم', vegetables: 'خضار وفواكه', grocery: 'بقالات', laundry: 'مغاسل', automotive: 'سيارات', beauty_salon: 'صالونات', public_works: 'أشغال عامة', fashion: 'موضة', sweets: 'حلويات ومخبوزات' },
+  en: { restaurant: 'Restaurants', vegetables: 'Vegetables & Fruits', grocery: 'Grocery', laundry: 'Laundries', automotive: 'Automotive', beauty_salon: 'Beauty Salons', public_works: 'Public Works', fashion: 'Fashion', sweets: 'Sweets & Bakery' },
+  fr: { restaurant: 'Restaurants', vegetables: 'Fruits & Légumes', grocery: 'Épicerie', laundry: 'Blanchisserie', automotive: 'Automobile', beauty_salon: 'Salons de Beauté', public_works: 'Travaux Publics', fashion: 'Mode', sweets: 'Douceurs & Boulangerie' },
 };
 
 const SECTOR_NAV: { key: NavSection; icon: typeof Apple; label: (t: typeof translations['ar']) => string }[] = [
@@ -67,9 +83,21 @@ const SECTOR_NAV: { key: NavSection; icon: typeof Apple; label: (t: typeof trans
   { key: 'barber', icon: Scissors, label: (t) => t.nav_barber },
   { key: 'public', icon: HardHat, label: (t) => t.nav_public },
   { key: 'fashion', icon: Shirt, label: (t) => t.nav_fashion },
+  { key: 'sweets', icon: Cookie, label: (t) => t.nav_sweets },
 ];
 
-const ALL_SECTORS = new Set<NavSection>(['veg', 'grocery', 'laundry', 'auto', 'barber', 'public', 'fashion']);
+const ALL_SECTORS = new Set<NavSection>(['veg', 'grocery', 'laundry', 'auto', 'barber', 'public', 'fashion', 'sweets']);
+
+type SectorGovernance = {
+  key: string;
+  alias: string;
+  labelAr: string;
+  labelEn: string;
+  labelFr: string;
+  active: boolean;
+  entityCount: number;
+  source: 'platformEntity' | 'contentCreators';
+};
 
 function SidebarLink({ icon, label, active, onClick }: { icon: ReactNode; label: string; active?: boolean; onClick?: () => void }) {
   return (
@@ -132,6 +160,70 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: { onToggl
     onSuccess: (data) => { toast.success(lang === 'ar' ? (data.message ?? 'تم تجهيز البيانات التجريبية') : lang === 'en' ? (data.seeded ? 'Demo data seeded successfully' : 'Demo data already present') : (data.seeded ? 'Données de démo générées' : 'Données déjà présentes')); refetch(); },
     onError: () => toast.error(lang === 'ar' ? 'فشل تجهيز البيانات التجريبية' : lang === 'en' ? 'Failed to seed demo data' : 'Échec de la génération des données'),
   });
+
+  const sectorCatalogQuery = trpc.admin.sectorCatalog.useQuery();
+  const sectors: SectorGovernance[] = sectorCatalogQuery.data?.sectors ?? [];
+
+  const [editSectorKey, setEditSectorKey] = useState<string | null>(null);
+  const [editLabels, setEditLabels] = useState({ labelAr: '', labelEn: '', labelFr: '' });
+  const [editActive, setEditActive] = useState(true);
+
+  const updateSectorMutation = trpc.admin.updateSectorMeta.useMutation({
+    onSuccess: () => { toast.success(t.label_updated); sectorCatalogQuery.refetch(); setEditSectorKey(null); },
+    onError: () => toast.error(t.label_failed),
+  });
+
+  const [notifyOpen, setNotifyOpen] = useState(false);
+  const [notifyTargetSector, setNotifyTargetSector] = useState<SectorGovernance | null>(null);
+  const [notifyMode, setNotifyMode] = useState<'broadcast' | 'targeted'>('broadcast');
+  const [notifyTitle, setNotifyTitle] = useState('');
+  const [notifyBody, setNotifyBody] = useState('');
+  const [notifyType, setNotifyType] = useState<'system' | 'message' | 'task' | 'payment'>('system');
+  const [notifySelectedIds, setNotifySelectedIds] = useState<string[]>([]);
+  const [notifyEntitySearch, setNotifyEntitySearch] = useState('');
+
+  const notifyEntityQuery = trpc.admin.getPlatformEntities.useQuery(
+    { sector: notifyTargetSector?.alias ?? notifyTargetSector?.key, search: notifyEntitySearch, filterTab: 'orders' },
+    { enabled: notifyOpen && notifyMode === 'targeted' && !!notifyTargetSector && notifyTargetSector.source === 'platformEntity' },
+  );
+
+  const notifySectorMutation = trpc.admin.notifySector.useMutation({
+    onSuccess: (data) => { toast.success(t.notify_sent + ` (${data.notified} ${lang === 'ar' ? 'منشأة' : t.sector_entities})`); setNotifyOpen(false); setNotifyTitle(''); setNotifyBody(''); setNotifySelectedIds([]); },
+    onError: () => toast.error(t.notify_failed),
+  });
+
+  const notifyEntitiesMutation = trpc.admin.notifyEntities.useMutation({
+    onSuccess: (data) => { toast.success(t.notify_sent + ` (${data.notified} ${lang === 'ar' ? 'منشأة' : t.sector_entities})`); setNotifyOpen(false); setNotifyTitle(''); setNotifyBody(''); setNotifySelectedIds([]); },
+    onError: () => toast.error(t.notify_failed),
+  });
+
+  const openNotifyModal = (sector: SectorGovernance) => { setNotifyTargetSector(sector); setNotifyMode('broadcast'); setNotifyTitle(''); setNotifyBody(''); setNotifyType('system'); setNotifySelectedIds([]); setNotifyEntitySearch(''); setNotifyOpen(true); };
+
+  const openEditModal = (sector: SectorGovernance) => { setEditSectorKey(sector.key); setEditLabels({ labelAr: sector.labelAr, labelEn: sector.labelEn, labelFr: sector.labelFr }); setEditActive(sector.active); };
+
+  const toggleSectorActive = (sector: SectorGovernance) => {
+    const fields = lang === 'ar' ? { labelAr: sector.labelAr, labelEn: sector.labelEn, labelFr: sector.labelFr } : lang === 'en' ? { labelAr: sector.labelAr, labelEn: sector.labelEn, labelFr: sector.labelFr } : { labelAr: sector.labelAr, labelEn: sector.labelEn, labelFr: sector.labelFr };
+    updateSectorMutation.mutate({ sectorKey: sector.key, ...fields, active: !sector.active });
+  };
+
+  const handleNotifySubmit = () => {
+    if (!notifyTargetSector || !notifyTitle.trim() || !notifyBody.trim()) return;
+    if (notifyMode === 'targeted' && notifySelectedIds.length === 0) return;
+    if (notifyMode === 'broadcast') {
+      notifySectorMutation.mutate({ sectorKey: notifyTargetSector.alias || notifyTargetSector.key, title: notifyTitle.trim(), body: notifyBody.trim(), type: notifyType });
+    } else {
+      notifyEntitiesMutation.mutate({ entityIds: notifySelectedIds, title: notifyTitle.trim(), body: notifyBody.trim(), type: notifyType });
+    }
+  };
+
+  const typeOptions = [
+    { value: 'system' as const, label: t.notify_type_system },
+    { value: 'message' as const, label: t.notify_type_message },
+    { value: 'task' as const, label: t.notify_type_task },
+    { value: 'payment' as const, label: t.notify_type_payment },
+  ];
+
+  const getSectorLabel = (sector: SectorGovernance) => lang === 'ar' ? sector.labelAr : lang === 'fr' ? sector.labelFr : sector.labelEn;
 
   useEffect(() => {
     document.documentElement.dir = t.dir;
@@ -220,6 +312,7 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: { onToggl
             <SidebarLink icon={<ShieldCheck size={18} />} label={t.nav_security} active={currentSection === 'security'} onClick={() => setCurrentSection('security')} />
             <SidebarLink icon={<HeartPulse size={18} />} label={t.nav_health} active={currentSection === 'health'} onClick={() => setCurrentSection('health')} />
             <SectionGroupLabel>{t.nav_future_modules}</SectionGroupLabel>
+            <SidebarLink icon={<Store size={18} />} label={t.nav_sectors} active={currentSection === 'sectors'} onClick={() => setCurrentSection('sectors')} />
             {SECTOR_NAV.map((sector) => {
               const Icon = sector.icon;
               return <SidebarLink key={sector.key} icon={<Icon size={18} />} label={sector.label(t)} active={currentSection === sector.key} onClick={() => setCurrentSection(sector.key)} />;
@@ -273,8 +366,97 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: { onToggl
           </header>
 
           <main className="flex-1 space-y-5 overflow-y-auto p-4 sm:p-6">
-            {showEntityTable ? (
+            {currentSection === 'sectors' ? (
               <>
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700/60 dark:bg-[#1e293b]">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h2 className="text-base font-black">{t.sectors_title}</h2>
+                      <p className="mt-1 text-[11px] leading-5 text-slate-500 dark:text-slate-400">{t.sectors_subtitle}</p>
+                    </div>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[10px] font-black text-orange-600 ring-1 ring-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:ring-orange-500/30">
+                      <Store size={12} />
+                      {sectors.length} {lang === 'ar' ? 'قطاعات' : lang === 'en' ? 'Sectors' : 'Secteurs'}
+                    </span>
+                  </div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+                  {sectors.map((sector) => {
+                    const NavIcon = sector.key === 'trend' ? Sparkles : (SECTOR_NAV.find((n) => n.key === (sector.alias || sector.key))?.icon ?? ShieldAlert);
+                    const label = getSectorLabel(sector);
+                    const isTrend = sector.source === 'contentCreators';
+                    return (
+                      <div key={sector.key} className={`flex flex-col gap-3 rounded-2xl border p-4 shadow-sm transition ${sector.active ? 'border-slate-200 bg-white dark:border-slate-700/60 dark:bg-[#1e293b]' : 'border-dashed border-slate-300 bg-slate-50/60 opacity-75 dark:border-slate-700 dark:bg-[#1e293b]/60'}`}>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${sector.active ? 'bg-orange-50 text-orange-500 dark:bg-orange-500/10 dark:text-orange-400' : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'}`}>
+                              <NavIcon size={20} />
+                            </span>
+                            <div>
+                              <p className="text-sm font-black text-slate-900 dark:text-white">{label}</p>
+                              <p className="mt-0.5 text-[10px] font-semibold text-slate-400 dark:text-slate-500">{sector.entityCount} {sector.entityCount === 1 ? t.sector_entities : t.sector_entities}</p>
+                            </div>
+                          </div>
+                          <span className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[9px] font-black ring-1 ${sector.active ? 'bg-emerald-50 text-emerald-600 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/30' : 'bg-slate-100 text-slate-500 ring-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700'}`}>
+                            {sector.active ? t.sector_status_active : t.sector_status_inactive}
+                          </span>
+                        </div>
+                        {isTrend && (
+                          <span className="inline-flex w-fit items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-black text-amber-600 ring-1 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/30">
+                            <Sparkles size={9} />
+                            {lang === 'ar' ? 'سوق المبدعين' : lang === 'en' ? 'Creators Marketplace' : 'Marché des Créateurs'}
+                          </span>
+                        )}
+                        <div className="mt-auto flex flex-wrap gap-1.5">
+                          <button type="button" onClick={() => openEditModal(sector)} className="flex cursor-pointer items-center gap-1 rounded-lg bg-slate-50 px-2 py-1.5 text-[10px] font-black text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-700">
+                            <Pencil size={11} />{t.btn_edit_labels}
+                          </button>
+                          <button type="button" onClick={() => openNotifyModal(sector)} disabled={notifySectorMutation.isPending || notifyEntitiesMutation.isPending} className="flex cursor-pointer items-center gap-1 rounded-lg bg-orange-50 px-2 py-1.5 text-[10px] font-black text-orange-600 ring-1 ring-orange-200 transition hover:bg-orange-100 disabled:opacity-50 dark:bg-orange-500/10 dark:text-orange-400 dark:ring-orange-500/30 dark:hover:bg-orange-500/20">
+                            <Megaphone size={11} />{t.btn_notify}
+                          </button>
+                          {!isTrend && (
+                            <button type="button" onClick={() => toggleSectorActive(sector)} disabled={updateSectorMutation.isPending} className={`flex cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-[10px] font-black ring-1 ring-inset transition disabled:opacity-50 ${sector.active ? 'bg-rose-50 text-rose-600 ring-rose-200 hover:bg-rose-100 dark:bg-rose-500/10 dark:text-rose-400 dark:ring-rose-500/30 dark:hover:bg-rose-500/20' : 'bg-emerald-50 text-emerald-600 ring-emerald-200 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/30 dark:hover:bg-emerald-500/20'}`}>
+                              {sector.active ? <ToggleLeft size={12} /> : <ToggleRight size={12} />}
+                              {sector.active ? t.btn_deactivate : t.btn_activate}
+                            </button>
+                          )}
+                        </div>
+                        {!sector.active && !isTrend && <p className="text-[9px] text-slate-400 dark:text-slate-500">{lang === 'ar' ? 'القطاع موقوف — لا يستقبل طلبات جديدة' : lang === 'en' ? 'Sector inactive — not accepting new orders' : 'Secteur inactif — n\'accepte pas les nouvelles commandes'}</p>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : showEntityTable ? (
+              <>
+                {isSectorSection && (() => {
+                  const sec = sectors.find((s) => (s.alias === currentSection || s.key === currentSection) && s.source === 'platformEntity');
+                  if (!sec) return null;
+                  const label = getSectorLabel(sec);
+                  return (
+                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700/60 dark:bg-[#1e293b]">
+                      <div className="flex items-center gap-3">
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-black ring-1 ${sec.active ? 'bg-emerald-50 text-emerald-600 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/30' : 'bg-slate-100 text-slate-500 ring-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700'}`}>
+                          {sec.active ? t.sector_status_active : t.sector_status_inactive}
+                        </span>
+                        <p className="text-sm font-black text-slate-900 dark:text-white">{label}</p>
+                        <span className="text-[10px] text-slate-400">{sec.entityCount} {t.sector_entities}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        <button type="button" onClick={() => openEditModal(sec)} className="flex cursor-pointer items-center gap-1 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11px] font-black text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-700">
+                          <Pencil size={12} />{t.btn_edit_labels}
+                        </button>
+                        <button type="button" onClick={() => openNotifyModal(sec)} disabled={notifySectorMutation.isPending || notifyEntitiesMutation.isPending} className="flex cursor-pointer items-center gap-1 rounded-lg bg-orange-50 px-2.5 py-1.5 text-[11px] font-black text-orange-600 ring-1 ring-orange-200 transition hover:bg-orange-100 disabled:opacity-50 dark:bg-orange-500/10 dark:text-orange-400 dark:ring-orange-500/30 dark:hover:bg-orange-500/20">
+                          <Megaphone size={12} />{t.btn_broadcast}
+                        </button>
+                        <button type="button" onClick={() => toggleSectorActive(sec)} disabled={updateSectorMutation.isPending} className={`flex cursor-pointer items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-black ring-1 ring-inset transition disabled:opacity-50 ${sec.active ? 'bg-rose-50 text-rose-600 ring-rose-200 hover:bg-rose-100 dark:bg-rose-500/10 dark:text-rose-400 dark:ring-rose-500/30 dark:hover:bg-rose-500/20' : 'bg-emerald-50 text-emerald-600 ring-emerald-200 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/30 dark:hover:bg-emerald-500/20'}`}>
+                          {sec.active ? <ToggleLeft size={13} /> : <ToggleRight size={13} />}
+                          {sec.active ? t.btn_deactivate : t.btn_activate}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
                   {kpis.map((kpi) => {
                     const Icon = kpi.icon;
@@ -578,6 +760,137 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: { onToggl
             <button type="button" onClick={() => setIsModalOpen(false)} className="mt-5 w-full rounded-xl bg-[#0f172a] py-2.5 text-sm font-black text-white transition hover:bg-slate-800 dark:bg-orange-500 dark:text-slate-900 dark:hover:bg-orange-600">
               {t.modal_close}
             </button>
+          </div>
+        </div>
+      )}
+
+      {editSectorKey && (() => {
+        const sec = sectors.find((s) => s.key === editSectorKey);
+        if (!sec) return null;
+        return (
+          <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" onClick={() => setEditSectorKey(null)}>
+            <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-[#1e293b]" onClick={(event) => event.stopPropagation()}>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-base font-black">{t.edit_modal_title}</h3>
+                  <p className="mt-1 text-xs text-slate-400">{getSectorLabel(sec)}</p>
+                </div>
+                <button type="button" onClick={() => setEditSectorKey(null)} className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="close"><X size={17} /></button>
+              </div>
+              <div className="mt-5 grid gap-4">
+                <label className="block">
+                  <span className="text-[10px] font-bold text-slate-400">{t.edit_label_ar}</span>
+                  <input dir="rtl" value={editLabels.labelAr} onChange={(e) => setEditLabels((p) => ({ ...p, labelAr: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-orange-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
+                </label>
+                <label className="block">
+                  <span className="text-[10px] font-bold text-slate-400">{t.edit_label_en}</span>
+                  <input dir="ltr" value={editLabels.labelEn} onChange={(e) => setEditLabels((p) => ({ ...p, labelEn: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-orange-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
+                </label>
+                <label className="block">
+                  <span className="text-[10px] font-bold text-slate-400">{t.edit_label_fr}</span>
+                  <input dir="ltr" value={editLabels.labelFr} onChange={(e) => setEditLabels((p) => ({ ...p, labelFr: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-orange-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
+                </label>
+                {sec.source !== 'contentCreators' && (
+                  <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900">
+                    <button type="button" onClick={() => setEditActive(!editActive)} className={`flex cursor-pointer items-center gap-2 text-[11px] font-black ${editActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                      {editActive ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                      {editActive ? t.sector_status_active : t.sector_status_inactive}
+                    </button>
+                    <span className="text-[10px] text-slate-400">{t.edit_active}</span>
+                  </div>
+                )}
+              </div>
+              <div className="mt-6 flex items-center gap-2">
+                <button type="button" onClick={() => updateSectorMutation.mutate({ sectorKey: editSectorKey, ...editLabels, active: sec.source === 'contentCreators' ? sec.active : editActive })} disabled={updateSectorMutation.isPending || !editLabels.labelAr.trim() || !editLabels.labelEn.trim() || !editLabels.labelFr.trim()} className="flex cursor-pointer items-center gap-1 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-black text-white transition hover:bg-orange-600 disabled:cursor-default disabled:opacity-50">
+                  <CheckCircle2 size={15} />
+                  {updateSectorMutation.isPending ? t.loading : t.btn_save}
+                </button>
+                <button type="button" onClick={() => setEditSectorKey(null)} className="flex cursor-pointer items-center gap-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-black text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
+                  {t.btn_cancel}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {notifyOpen && notifyTargetSector && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" onClick={() => setNotifyOpen(false)}>
+          <div className="w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-[#1e293b]" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-base font-black">{t.notify_modal_title}</h3>
+                <p className="mt-1 text-xs text-slate-400">{getSectorLabel(notifyTargetSector)}</p>
+              </div>
+              <button type="button" onClick={() => setNotifyOpen(false)} className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="close"><X size={17} /></button>
+            </div>
+
+            {notifyTargetSector.source === 'platformEntity' && (
+              <div className="mt-4 flex items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
+                <button type="button" onClick={() => { setNotifyMode('broadcast'); setNotifySelectedIds([]); }} className={`flex-1 cursor-pointer rounded-lg px-3 py-2 text-[11px] font-black transition ${notifyMode === 'broadcast' ? 'bg-white text-orange-600 shadow-sm dark:bg-slate-700 dark:text-orange-400' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}>
+                  {t.notify_broadcast_all}
+                </button>
+                <button type="button" onClick={() => setNotifyMode('targeted')} className={`flex-1 cursor-pointer rounded-lg px-3 py-2 text-[11px] font-black transition ${notifyMode === 'targeted' ? 'bg-white text-orange-600 shadow-sm dark:bg-slate-700 dark:text-orange-400' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}>
+                  {t.notify_targeted} ({notifySelectedIds.length})
+                </button>
+              </div>
+            )}
+
+            {notifyTargetSector.source === 'contentCreators' && notifyMode === 'targeted' && (
+              <p className="mt-3 text-[10px] text-amber-600 dark:text-amber-400">{lang === 'ar' ? 'سوق الترند يدعم الإرسال الجماعي فقط — يُرسل لجميع المبدعين' : lang === 'en' ? 'Trend Market only supports broadcast — message goes to all creators' : 'Le Marché Trend supporte uniquement la diffusion — message envoyé à tous les créateurs'}</p>
+            )}
+
+            {notifyMode === 'targeted' && notifyTargetSector.source === 'platformEntity' && (
+              <div className="mt-4 space-y-3">
+                <div className="relative">
+                  <Search size={15} className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input dir="ltr" value={notifyEntitySearch} onChange={(e) => setNotifyEntitySearch(e.target.value)} placeholder={t.notify_search_placeholder} className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 ps-9 text-sm outline-none placeholder:text-slate-400 focus:border-orange-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
+                </div>
+                <div className="max-h-40 space-y-1 overflow-y-auto rounded-xl border border-slate-200 p-2 dark:border-slate-700">
+                  {(notifyEntityQuery.data?.entities ?? []).map((ent) => (
+                    <label key={ent.id} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition hover:bg-slate-50 dark:hover:bg-slate-800">
+                      <input type="checkbox" checked={notifySelectedIds.includes(ent.id)} onChange={() => setNotifySelectedIds((prev) => prev.includes(ent.id) ? prev.filter((id) => id !== ent.id) : [...prev, ent.id])} className="h-3.5 w-3.5 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[11px] font-semibold text-slate-700 dark:text-slate-300">{ent.customerName}</p>
+                        <p className="truncate text-[9px] text-slate-400" dir="ltr">{ent.email}</p>
+                      </div>
+                      <span className="shrink-0 text-[9px] text-slate-400">{ent.id}</span>
+                    </label>
+                  ))}
+                  {(notifyEntityQuery.data?.entities ?? []).length === 0 && <p className="py-4 text-center text-[11px] text-slate-400">{t.loading}</p>}
+                </div>
+                {notifySelectedIds.length > 0 && <p className="text-[10px] text-slate-400">{notifySelectedIds.length} {t.notify_selected}</p>}
+              </div>
+            )}
+
+            <div className="mt-4 grid gap-4">
+              <div className="flex gap-2">
+                <label className="flex-1 block">
+                  <span className="text-[10px] font-bold text-slate-400">{t.notify_title_label}</span>
+                  <input dir="rtl" value={notifyTitle} onChange={(e) => setNotifyTitle(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-orange-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
+                </label>
+                <label className="w-32 block">
+                  <span className="text-[10px] font-bold text-slate-400">{t.notify_type_label}</span>
+                  <select value={notifyType} onChange={(e) => setNotifyType(e.target.value as typeof notifyType)} className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-orange-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+                    {typeOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                  </select>
+                </label>
+              </div>
+              <label className="block">
+                <span className="text-[10px] font-bold text-slate-400">{t.notify_body_label}</span>
+                <textarea dir="rtl" value={notifyBody} onChange={(e) => setNotifyBody(e.target.value)} rows={4} className="mt-1 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-orange-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
+              </label>
+            </div>
+
+            <div className="mt-5 flex items-center gap-2">
+              <button type="button" onClick={handleNotifySubmit} disabled={(notifySectorMutation.isPending || notifyEntitiesMutation.isPending) || !notifyTitle.trim() || !notifyBody.trim() || (notifyMode === 'targeted' && notifySelectedIds.length === 0)} className="flex cursor-pointer items-center gap-1 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-black text-white transition hover:bg-orange-600 disabled:cursor-default disabled:opacity-50">
+                <Send size={15} />
+                {(notifySectorMutation.isPending || notifyEntitiesMutation.isPending) ? t.loading : t.notify_send}
+              </button>
+              <button type="button" onClick={() => setNotifyOpen(false)} className="flex cursor-pointer items-center gap-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-black text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
+                {t.btn_close}
+              </button>
+            </div>
           </div>
         </div>
       )}
