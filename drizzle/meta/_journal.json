@@ -1303,6 +1303,13 @@
       "when": 1789950000000,
       "tag": "0185_add_sweets_sector",
       "breakpoints": true
+    },
+    {
+      "idx": 186,
+      "version": "5",
+      "when": 1790000000000,
+      "tag": "0186_marketplace_core",
+      "breakpoints": true
     }
   ]
 }

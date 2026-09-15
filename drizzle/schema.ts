@@ -1768,3 +1768,270 @@ export const governanceAuditLogs = mysqlTable("governance_audit_logs", {
   governanceAuditLogsEntityIdx: index("governance_audit_logs_entity_idx").on(table.entityId, table.performedAt),
   governanceAuditLogsActionIdx: index("governance_audit_logs_action_idx").on(table.actionType, table.performedAt),
 }));
+
+// ── Marketplace Sectors (dynamic catalog, not hard-coded enum) ────────────
+export const marketplaceSectors = mysqlTable("marketplace_sectors", {
+  id: int("id").autoincrement().primaryKey(),
+  slug: varchar("slug", { length: 80 }).notNull().unique(),
+  labelAr: varchar("labelAr", { length: 120 }).notNull(),
+  labelEn: varchar("labelEn", { length: 120 }).notNull(),
+  labelFr: varchar("labelFr", { length: 120 }).notNull(),
+  icon: varchar("icon", { length: 40 }).default("store").notNull(),
+  color: varchar("color", { length: 16 }).default("#E76F3C").notNull(),
+  descriptionAr: varchar("descriptionAr", { length: 500 }),
+  descriptionEn: varchar("descriptionEn", { length: 500 }),
+  descriptionFr: varchar("descriptionFr", { length: 500 }),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  marketplaceSectorsSlugIdx: index("marketplace_sectors_slug_idx").on(table.slug),
+  marketplaceSectorsActiveIdx: index("marketplace_sectors_active_idx").on(table.isActive, table.sortOrder),
+}));
+
+// ── Marketplace Listings (products / services from providers) ─────────────
+export const marketplaceListings = mysqlTable("marketplace_listings", {
+  id: int("id").autoincrement().primaryKey(),
+  entityId: varchar("entity_id", { length: 30 }).notNull().references(() => platformEntities.id, { onDelete: "cascade" }),
+  sectorId: int("sector_id").notNull().references(() => marketplaceSectors.id),
+  restaurantId: int("restaurantId").references(() => restaurants.id),
+  title: varchar("title", { length: 200 }).notNull(),
+  titleEn: varchar("titleEn", { length: 200 }),
+  description: text("description"),
+  descriptionEn: text("descriptionEn"),
+  imageUrl: varchar("imageUrl", { length: 500 }),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  compareAtPrice: decimal("compareAtPrice", { precision: 10, scale: 2 }),
+  currencyCode: varchar("currencyCode", { length: 3 }).default("SAR").notNull(),
+  unit: varchar("unit", { length: 40 }).default("piece").notNull(),
+  stockQuantity: int("stockQuantity"),
+  status: mysqlEnum("status", ["draft", "active", "paused", "sold_out"]).default("draft").notNull(),
+  isFeatured: boolean("isFeatured").default(false).notNull(),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  tagsJson: text("tagsJson"),
+  metadataJson: text("metadataJson"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  marketplaceListingsEntityIdx: index("marketplace_listings_entity_idx").on(table.entityId),
+  marketplaceListingsSectorIdx: index("marketplace_listings_sector_idx").on(table.sectorId, table.status),
+  marketplaceListingsRestaurantIdx: index("marketplace_listings_restaurant_idx").on(table.restaurantId),
+  marketplaceListingsFeaturedIdx: index("marketplace_listings_featured_idx").on(table.isFeatured, table.sortOrder),
+}));
+
+// ── Store Referral Links ─────────────────────────────────────────────────
+export const storeReferralLinks = mysqlTable("store_referral_links", {
+  id: int("id").autoincrement().primaryKey(),
+  entityId: varchar("entity_id", { length: 30 }).notNull().references(() => platformEntities.id, { onDelete: "cascade" }),
+  code: varchar("code", { length: 80 }).notNull().unique(),
+  rewardType: mysqlEnum("rewardType", ["percent", "fixed", "points"]).default("percent").notNull(),
+  rewardValue: decimal("rewardValue", { precision: 10, scale: 2 }).default("0").notNull(),
+  maxUses: int("maxUses"),
+  useCount: int("useCount").default(0).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  expiresAt: timestamp("expiresAt"),
+  createdByUserId: int("createdByUserId").references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  storeReferralLinksCodeIdx: index("store_referral_links_code_idx").on(table.code),
+  storeReferralLinksEntityIdx: index("store_referral_links_entity_idx").on(table.entityId),
+}));
+
+// ── Store Referral Records (click / conversion tracking) ─────────────────
+export const storeReferralRecords = mysqlTable("store_referral_records", {
+  id: int("id").autoincrement().primaryKey(),
+  linkId: int("linkId").notNull().references(() => storeReferralLinks.id),
+  entityId: varchar("entity_id", { length: 30 }).notNull().references(() => platformEntities.id),
+  referredUserId: int("referredUserId").references(() => users.id),
+  orderId: int("orderId").references(() => orders.id),
+  status: mysqlEnum("status", ["pending", "converted", "expired"]).default("pending").notNull(),
+  rewardIssued: boolean("rewardIssued").default(false).notNull(),
+  ipHash: varchar("ipHash", { length: 64 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  convertedAt: timestamp("convertedAt"),
+}, (table) => ({
+  storeReferralRecordsLinkIdx: index("store_referral_records_link_idx").on(table.linkId),
+  storeReferralRecordsEntityIdx: index("store_referral_records_entity_idx").on(table.entityId),
+  storeReferralRecordsStatusIdx: index("store_referral_records_status_idx").on(table.status),
+}));
+
+// ── Store Coupons ────────────────────────────────────────────────────────
+export const storeCoupons = mysqlTable("store_coupons", {
+  id: int("id").autoincrement().primaryKey(),
+  entityId: varchar("entity_id", { length: 30 }).notNull().references(() => platformEntities.id, { onDelete: "cascade" }),
+  code: varchar("code", { length: 64 }).notNull(),
+  description: varchar("description", { length: 300 }),
+  discountType: mysqlEnum("discountType", ["percent", "fixed"]).default("percent").notNull(),
+  discountValue: decimal("discountValue", { precision: 10, scale: 2 }).notNull(),
+  minOrderAmount: decimal("minOrderAmount", { precision: 10, scale: 2 }).default("0").notNull(),
+  maxDiscountAmount: decimal("maxDiscountAmount", { precision: 10, scale: 2 }),
+  usageLimit: int("usageLimit"),
+  perUserLimit: int("perUserLimit").default(1).notNull(),
+  useCount: int("useCount").default(0).notNull(),
+  startsAt: timestamp("startsAt"),
+  endsAt: timestamp("endsAt"),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdByUserId: int("createdByUserId").references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  storeCouponsCodeIdx: index("store_coupons_code_idx").on(table.code),
+  storeCouponsEntityIdx: index("store_coupons_entity_idx").on(table.entityId),
+  storeCouponsActiveIdx: index("store_coupons_active_idx").on(table.entityId, table.isActive),
+}));
+
+// ── Store Coupon Redemptions ─────────────────────────────────────────────
+export const storeCouponRedemptions = mysqlTable("store_coupon_redemptions", {
+  id: int("id").autoincrement().primaryKey(),
+  couponId: int("couponId").notNull().references(() => storeCoupons.id),
+  entityId: varchar("entity_id", { length: 30 }).notNull().references(() => platformEntities.id),
+  userId: int("userId").notNull().references(() => users.id),
+  orderId: int("orderId").references(() => orders.id),
+  discountApplied: decimal("discountApplied", { precision: 10, scale: 2 }).notNull(),
+  redeemedAt: timestamp("redeemedAt").defaultNow().notNull(),
+}, (table) => ({
+  storeCouponRedemptionsCouponIdx: index("store_coupon_redemptions_coupon_idx").on(table.couponId),
+  storeCouponRedemptionsUserIdx: index("store_coupon_redemptions_user_idx").on(table.userId, table.couponId),
+}));
+
+// ── Store Campaigns ──────────────────────────────────────────────────────
+export const storeCampaigns = mysqlTable("store_campaigns", {
+  id: int("id").autoincrement().primaryKey(),
+  entityId: varchar("entity_id", { length: 30 }).notNull().references(() => platformEntities.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 160 }).notNull(),
+  description: text("description"),
+  type: mysqlEnum("type", ["general", "seasonal", "referral_boost", "loyalty_boost", "flash_sale"]).default("general").notNull(),
+  status: mysqlEnum("status", ["draft", "scheduled", "active", "ended"]).default("draft").notNull(),
+  startsAt: timestamp("startsAt"),
+  endsAt: timestamp("endsAt"),
+  bonusPoints: int("bonusPoints").default(0),
+  bonusPercent: decimal("bonusPercent", { precision: 5, scale: 2 }).default("0"),
+  targetCouponId: int("targetCouponId").references(() => storeCoupons.id),
+  createdByUserId: int("createdByUserId").references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  storeCampaignsEntityIdx: index("store_campaigns_entity_idx").on(table.entityId, table.status),
+}));
+
+// ── Store Loyalty Settings (per-provider) ────────────────────────────────
+export const storeLoyaltySettings = mysqlTable("store_loyalty_settings", {
+  id: int("id").autoincrement().primaryKey(),
+  entityId: varchar("entity_id", { length: 30 }).notNull().references(() => platformEntities.id, { onDelete: "cascade" }),
+  pointsPerCurrency: decimal("pointsPerCurrency", { precision: 5, scale: 2 }).default("1.00").notNull(),
+  redeemRate: decimal("redeemRate", { precision: 5, scale: 2 }).default("0.01").notNull(),
+  minPointsToRedeem: int("minPointsToRedeem").default(100).notNull(),
+  welcomeBonusPoints: int("welcomeBonusPoints").default(0).notNull(),
+  tierThresholdsJson: text("tierThresholdsJson"),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  storeLoyaltySettingsEntityIdx: index("store_loyalty_settings_entity_idx").on(table.entityId),
+}));
+
+// ── Store Reward Transactions ────────────────────────────────────────────
+export const storeRewardTransactions = mysqlTable("store_reward_transactions", {
+  id: int("id").autoincrement().primaryKey(),
+  entityId: varchar("entity_id", { length: 30 }).notNull().references(() => platformEntities.id),
+  userId: int("userId").notNull().references(() => users.id),
+  type: mysqlEnum("type", ["earn", "redeem", "adjust", "expire", "welcome"]).notNull(),
+  points: int("points").notNull(),
+  balanceAfter: int("balanceAfter").default(0).notNull(),
+  referenceType: varchar("referenceType", { length: 60 }),
+  referenceId: int("referenceId"),
+  note: varchar("note", { length: 300 }),
+  createdByUserId: int("createdByUserId").references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  storeRewardTxEntityUserIdx: index("store_reward_tx_entity_user_idx").on(table.entityId, table.userId),
+  storeRewardTxTypeIdx: index("store_reward_tx_type_idx").on(table.type, table.createdAt),
+}));
+
+// ── Store Loyalty Accounts (per-provider per-customer) ───────────────────
+export const storeLoyaltyAccounts = mysqlTable("store_loyalty_accounts", {
+  id: int("id").autoincrement().primaryKey(),
+  entityId: varchar("entity_id", { length: 30 }).notNull().references(() => platformEntities.id),
+  userId: int("userId").notNull().references(() => users.id),
+  pointsBalance: int("pointsBalance").default(0).notNull(),
+  tier: varchar("tier", { length: 40 }).default("standard").notNull(),
+  totalEarned: int("totalEarned").default(0).notNull(),
+  totalRedeemed: int("totalRedeemed").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  storeLoyaltyAccountEntityUserUnique: uniqueIndex("store_loyalty_accounts_entity_user_unique").on(table.entityId, table.userId),
+}));
+
+// ── Affiliate Accounts ───────────────────────────────────────────────────
+export const affiliateAccounts = mysqlTable("affiliate_accounts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id),
+  code: varchar("code", { length: 80 }).notNull().unique(),
+  commissionRate: decimal("commissionRate", { precision: 5, scale: 2 }).default("5.00").notNull(),
+  totalEarnings: decimal("totalEarnings", { precision: 12, scale: 2 }).default("0.00").notNull(),
+  paidEarnings: decimal("paidEarnings", { precision: 12, scale: 2 }).default("0.00").notNull(),
+  status: mysqlEnum("status", ["pending", "active", "suspended", "rejected"]).default("pending").notNull(),
+  appliedAt: timestamp("appliedAt").defaultNow().notNull(),
+  approvedAt: timestamp("approvedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  affiliateAccountsUserIdx: index("affiliate_accounts_user_idx").on(table.userId),
+  affiliateAccountsCodeIdx: index("affiliate_accounts_code_idx").on(table.code),
+}));
+
+// ── Affiliate Links ──────────────────────────────────────────────────────
+export const affiliateLinks = mysqlTable("affiliate_links", {
+  id: int("id").autoincrement().primaryKey(),
+  affiliateUserId: int("affiliateUserId").notNull().references(() => affiliateAccounts.id),
+  entityId: varchar("entity_id", { length: 30 }).references(() => platformEntities.id),
+  code: varchar("code", { length: 80 }).notNull().unique(),
+  targetPath: varchar("targetPath", { length: 300 }).default("/").notNull(),
+  clickCount: int("clickCount").default(0).notNull(),
+  conversionCount: int("conversionCount").default(0).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  affiliateLinksCodeIdx: index("affiliate_links_code_idx").on(table.code),
+  affiliateLinksAffiliateIdx: index("affiliate_links_affiliate_idx").on(table.affiliateUserId),
+  affiliateLinksEntityIdx: index("affiliate_links_entity_idx").on(table.entityId),
+}));
+
+// ── Affiliate Commissions ────────────────────────────────────────────────
+export const affiliateCommissions = mysqlTable("affiliate_commissions", {
+  id: int("id").autoincrement().primaryKey(),
+  affiliateUserId: int("affiliateUserId").notNull().references(() => affiliateAccounts.id),
+  linkId: int("linkId").references(() => affiliateLinks.id),
+  entityId: varchar("entity_id", { length: 30 }).references(() => platformEntities.id),
+  orderId: int("orderId").references(() => orders.id),
+  orderAmount: decimal("orderAmount", { precision: 12, scale: 2 }).notNull(),
+  commissionRate: decimal("commissionRate", { precision: 5, scale: 2 }).notNull(),
+  commissionAmount: decimal("commissionAmount", { precision: 12, scale: 2 }).notNull(),
+  status: mysqlEnum("status", ["pending", "approved", "paid", "rejected"]).default("pending").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  approvedAt: timestamp("approvedAt"),
+}, (table) => ({
+  affiliateCommissionsAffiliateIdx: index("affiliate_commissions_affiliate_idx").on(table.affiliateUserId),
+  affiliateCommissionsStatusIdx: index("affiliate_commissions_status_idx").on(table.status),
+}));
+
+// ── Affiliate Payout Requests ────────────────────────────────────────────
+export const affiliatePayoutRequests = mysqlTable("affiliate_payout_requests", {
+  id: int("id").autoincrement().primaryKey(),
+  affiliateUserId: int("affiliateUserId").notNull().references(() => affiliateAccounts.id),
+  amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
+  currencyCode: varchar("currencyCode", { length: 3 }).default("SAR").notNull(),
+  paymentMethod: varchar("paymentMethod", { length: 40 }).default("bank_transfer").notNull(),
+  paymentDetailsJson: text("paymentDetailsJson"),
+  status: mysqlEnum("status", ["pending", "processing", "completed", "rejected"]).default("pending").notNull(),
+  reviewNote: varchar("reviewNote", { length: 500 }),
+  reviewedByUserId: int("reviewedByUserId").references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  processedAt: timestamp("processedAt"),
+}, (table) => ({
+  affiliatePayoutsAffiliateIdx: index("affiliate_payouts_affiliate_idx").on(table.affiliateUserId),
+  affiliatePayoutsStatusIdx: index("affiliate_payouts_status_idx").on(table.status),
+}));

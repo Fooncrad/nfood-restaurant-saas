@@ -36,6 +36,12 @@ const routeLoaders = {
   FavoritesPage: () => import("./pages/FavoritesPage"),
   SubscriptionReceiptsAdminPage: () => import("./pages/SubscriptionReceiptsAdminPage"),
   TranslationEditorPage: () => import("./pages/TranslationEditorPage"),
+  MarketplaceLanding: () => import("./pages/MarketplaceLanding"),
+  MarketplaceSector: () => import("./pages/MarketplaceSector"),
+  MarketplaceStore: () => import("./pages/MarketplaceStore"),
+  StoreRewards: () => import("./pages/StoreRewards"),
+  StoreMarketing: () => import("./pages/StoreMarketing"),
+  AffiliateView: () => import("./pages/AffiliateView"),
 };
 const Home = lazy(routeLoaders.Home);
 const RestaurantPublic = lazy(routeLoaders.RestaurantPublic);
@@ -64,6 +70,12 @@ const VcardCardsAdmin = lazy(routeLoaders.VcardCardsAdmin);
 const FavoritesPage = lazy(routeLoaders.FavoritesPage);
 const SubscriptionReceiptsAdminPage = lazy(routeLoaders.SubscriptionReceiptsAdminPage);
 const TranslationEditorPage = lazy(routeLoaders.TranslationEditorPage);
+const MarketplaceLanding = lazy(routeLoaders.MarketplaceLanding);
+const MarketplaceSector = lazy(routeLoaders.MarketplaceSector);
+const MarketplaceStore = lazy(routeLoaders.MarketplaceStore);
+const StoreRewards = lazy(routeLoaders.StoreRewards);
+const StoreMarketing = lazy(routeLoaders.StoreMarketing);
+const AffiliateView = lazy(routeLoaders.AffiliateView);
 const CustomerProfileSettingsRoute = () => <CustomerProfileSettings />;
 import PublicHome from "./pages/PublicHome";
 import LoginPage from "./pages/LoginPage";
@@ -141,6 +153,12 @@ function Router() {
       <Route path="/refund-policy" component={() => <LegalPage kind="refund" />} />
       <Route path="/contact" component={ContactPage} />
       <Route path="/subscription-status" component={SubscriptionStatusPage} />
+      <Route path="/marketplace" component={MarketplaceLanding} />
+      <Route path="/marketplace/sector/:slug" component={MarketplaceSector} />
+      <Route path="/store/:entityId/rewards" component={StoreRewards} />
+      <Route path="/store/:entityId" component={MarketplaceStore} />
+      <Route path="/store-marketing" component={StoreMarketing} />
+      <Route path="/affiliate" component={AffiliateView} />
       <Route path="/admin/subscription-receipts" component={SubscriptionReceiptsAdminPage} />
       <Route path="/display/:token" component={PublicDisplay} />
       <Route path="/tv/:token" component={PublicDisplay} />
