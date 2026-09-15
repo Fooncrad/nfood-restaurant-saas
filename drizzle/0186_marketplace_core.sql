@@ -17,7 +17,7 @@ CREATE TABLE `marketplace_sectors` (
   UNIQUE KEY `marketplace_sectors_slug_unique` (`slug`),
   KEY `marketplace_sectors_slug_idx` (`slug`),
   KEY `marketplace_sectors_active_idx` (`isActive`, `sortOrder`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `marketplace_listings` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -49,7 +49,7 @@ CREATE TABLE `marketplace_listings` (
   CONSTRAINT `marketplace_listings_entity_fk` FOREIGN KEY (`entity_id`) REFERENCES `platform_entities`(`id`) ON DELETE CASCADE,
   CONSTRAINT `marketplace_listings_sector_fk` FOREIGN KEY (`sector_id`) REFERENCES `marketplace_sectors`(`id`),
   CONSTRAINT `marketplace_listings_restaurant_fk` FOREIGN KEY (`restaurantId`) REFERENCES `restaurants`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `store_referral_links` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -70,7 +70,7 @@ CREATE TABLE `store_referral_links` (
   KEY `store_referral_links_entity_idx` (`entity_id`),
   CONSTRAINT `store_referral_links_entity_fk` FOREIGN KEY (`entity_id`) REFERENCES `platform_entities`(`id`) ON DELETE CASCADE,
   CONSTRAINT `store_referral_links_user_fk` FOREIGN KEY (`createdByUserId`) REFERENCES `users`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `store_referral_records` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -91,7 +91,7 @@ CREATE TABLE `store_referral_records` (
   CONSTRAINT `store_referral_records_entity_fk` FOREIGN KEY (`entity_id`) REFERENCES `platform_entities`(`id`),
   CONSTRAINT `store_referral_records_user_fk` FOREIGN KEY (`referredUserId`) REFERENCES `users`(`id`),
   CONSTRAINT `store_referral_records_order_fk` FOREIGN KEY (`orderId`) REFERENCES `orders`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `store_coupons` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -117,7 +117,7 @@ CREATE TABLE `store_coupons` (
   KEY `store_coupons_active_idx` (`entity_id`, `isActive`),
   CONSTRAINT `store_coupons_entity_fk` FOREIGN KEY (`entity_id`) REFERENCES `platform_entities`(`id`) ON DELETE CASCADE,
   CONSTRAINT `store_coupons_user_fk` FOREIGN KEY (`createdByUserId`) REFERENCES `users`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `store_coupon_redemptions` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -134,7 +134,7 @@ CREATE TABLE `store_coupon_redemptions` (
   CONSTRAINT `store_coupon_redemptions_entity_fk` FOREIGN KEY (`entity_id`) REFERENCES `platform_entities`(`id`),
   CONSTRAINT `store_coupon_redemptions_user_fk` FOREIGN KEY (`userId`) REFERENCES `users`(`id`),
   CONSTRAINT `store_coupon_redemptions_order_fk` FOREIGN KEY (`orderId`) REFERENCES `orders`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `store_campaigns` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -156,7 +156,7 @@ CREATE TABLE `store_campaigns` (
   CONSTRAINT `store_campaigns_entity_fk` FOREIGN KEY (`entity_id`) REFERENCES `platform_entities`(`id`) ON DELETE CASCADE,
   CONSTRAINT `store_campaigns_coupon_fk` FOREIGN KEY (`targetCouponId`) REFERENCES `store_coupons`(`id`),
   CONSTRAINT `store_campaigns_user_fk` FOREIGN KEY (`createdByUserId`) REFERENCES `users`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `store_loyalty_settings` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -173,7 +173,7 @@ CREATE TABLE `store_loyalty_settings` (
   UNIQUE KEY `store_loyalty_settings_entity_unique` (`entity_id`),
   KEY `store_loyalty_settings_entity_idx` (`entity_id`),
   CONSTRAINT `store_loyalty_settings_entity_fk` FOREIGN KEY (`entity_id`) REFERENCES `platform_entities`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `store_loyalty_accounts` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -189,7 +189,7 @@ CREATE TABLE `store_loyalty_accounts` (
   UNIQUE KEY `store_loyalty_accounts_entity_user_unique` (`entity_id`, `userId`),
   CONSTRAINT `store_loyalty_accounts_entity_fk` FOREIGN KEY (`entity_id`) REFERENCES `platform_entities`(`id`),
   CONSTRAINT `store_loyalty_accounts_user_fk` FOREIGN KEY (`userId`) REFERENCES `users`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `store_reward_transactions` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -209,7 +209,7 @@ CREATE TABLE `store_reward_transactions` (
   CONSTRAINT `store_reward_tx_entity_fk` FOREIGN KEY (`entity_id`) REFERENCES `platform_entities`(`id`),
   CONSTRAINT `store_reward_tx_user_fk` FOREIGN KEY (`userId`) REFERENCES `users`(`id`),
   CONSTRAINT `store_reward_tx_createdby_fk` FOREIGN KEY (`createdByUserId`) REFERENCES `users`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `affiliate_accounts` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -228,7 +228,7 @@ CREATE TABLE `affiliate_accounts` (
   KEY `affiliate_accounts_user_idx` (`userId`),
   KEY `affiliate_accounts_code_idx` (`code`),
   CONSTRAINT `affiliate_accounts_user_fk` FOREIGN KEY (`userId`) REFERENCES `users`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `affiliate_links` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -247,7 +247,7 @@ CREATE TABLE `affiliate_links` (
   KEY `affiliate_links_entity_idx` (`entity_id`),
   CONSTRAINT `affiliate_links_affiliate_fk` FOREIGN KEY (`affiliateUserId`) REFERENCES `affiliate_accounts`(`id`),
   CONSTRAINT `affiliate_links_entity_fk` FOREIGN KEY (`entity_id`) REFERENCES `platform_entities`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `affiliate_commissions` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -268,7 +268,7 @@ CREATE TABLE `affiliate_commissions` (
   CONSTRAINT `affiliate_commissions_link_fk` FOREIGN KEY (`linkId`) REFERENCES `affiliate_links`(`id`),
   CONSTRAINT `affiliate_commissions_entity_fk` FOREIGN KEY (`entity_id`) REFERENCES `platform_entities`(`id`),
   CONSTRAINT `affiliate_commissions_order_fk` FOREIGN KEY (`orderId`) REFERENCES `orders`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `affiliate_payout_requests` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -287,7 +287,7 @@ CREATE TABLE `affiliate_payout_requests` (
   KEY `affiliate_payouts_status_idx` (`status`),
   CONSTRAINT `affiliate_payouts_affiliate_fk` FOREIGN KEY (`affiliateUserId`) REFERENCES `affiliate_accounts`(`id`),
   CONSTRAINT `affiliate_payouts_reviewer_fk` FOREIGN KEY (`reviewedByUserId`) REFERENCES `users`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Seed marketplace sectors from existing platform sectors + new ones
 INSERT INTO `marketplace_sectors` (`slug`, `labelAr`, `labelEn`, `labelFr`, `icon`, `color`, `sortOrder`, `isActive`) VALUES
