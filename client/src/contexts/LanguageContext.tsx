@@ -1240,8 +1240,14 @@ function applyLegacyUiTranslations(language: Language, root: Node = document) {
     if (isNonVisualTranslationNode(textNode)) continue;
     const current = textNode.nodeValue ?? "";
     const cached = legacyNodeSources.get(textNode);
+    const hasArabic = /[\u0600-\u06FF]/.test(current);
     const knownStates = cached ? [cached, ...(["en", "fr"] as const).map((target) => autoTranslateText(cached, target))] : [];
-    if (!cached || (!knownStates.includes(current) && !(/[\u0600-\u06FF]/.test(current) && knownStates.some((state) => current.includes(state))))) legacyNodeSources.set(textNode, current);
+    if (!cached) {
+      legacyNodeSources.set(textNode, current);
+    } else {
+      const isKnownVariant = knownStates.includes(current) || (hasArabic && knownStates.some((state) => state.length > 1 && current.includes(state)));
+      if (hasArabic && !isKnownVariant) legacyNodeSources.set(textNode, current);
+    }
     const source = legacyNodeSources.get(textNode) ?? current;
     if (!source.trim()) continue;
     const translated = autoTranslateText(source, language);
@@ -1306,8 +1312,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     applyLanguageDocumentAttributes(language);
     if (!isPublicLanguagePath(window.location.pathname)) window.localStorage.setItem(DASHBOARD_LANGUAGE_STORAGE_KEY, language);
     applyLegacyUiTranslations(language);
-    const observer = new MutationObserver((mutations) => mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => scheduleLegacyUiTranslations(language, node))));
-    observer.observe(document.body, { subtree: true, childList: true });
+    const observer = new MutationObserver((mutations) => mutations.forEach((mutation) => {
+      if (mutation.type === "characterData" && mutation.target instanceof CharacterData) {
+        scheduleLegacyUiTranslations(language, mutation.target.parentNode ?? document);
+      } else {
+        mutation.addedNodes.forEach((node) => scheduleLegacyUiTranslations(language, node));
+      }
+    }));
+    observer.observe(document.body, { subtree: true, childList: true, characterData: true });
     return () => { observer.disconnect(); };
   }, [language, meta.dir]);
   const value = useMemo<LanguageContextValue>(() => ({ language, direction: meta.dir, locale: meta.locale, isLanguageChanging, setLanguage: (next, persist = true) => { if (next !== language) { animateLanguageChange(); setIsLanguageChanging(true); if (typeof window !== "undefined") window.setTimeout(() => setIsLanguageChanging(false), 420); } setLanguageState(next); if (persist && typeof window !== "undefined") { window.localStorage.setItem(languageStorageKey(), next); if (isPublicLanguagePath(window.location.pathname)) window.localStorage.setItem(MENU_LANGUAGE_MANUAL_STORAGE_KEY, next); } }, t: createTranslator(language), formatDate: (input) => formatGregorianDate(input, language), formatNumber: (input) => formatLatinNumber(input, language)   }), [language, meta.dir, meta.locale, isLanguageChanging]);
