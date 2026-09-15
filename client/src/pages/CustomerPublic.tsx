@@ -16,7 +16,7 @@ const profileCopy = {
   ur: { unavailable: "عوامی پروفائل دستیاب نہیں", unavailableHint: "لنک غلط ہو سکتا ہے یا مالک نے شیئرنگ بند کر دی ہے۔", back: "واپس", defaultProfile: "کسٹمر پروفائل", share: "پروفائل شیئر کریں", email: "ای میل", links: "رابطے کے لنکس", services: "خدمات", products: "مصنوعات اور ترکیبیں", paymentMethods: "ادائیگی کے طریقے", visit: "خدمت دیکھیں", digitalCard: "ڈیجیٹل رابطہ کارڈ", copy: "لنک کاپی کریں", copied: "لنک کاپی ہو گیا", welcome: "میرے عوامی پروفائل میں خوش آمدید۔" },
 } as const;
 
-type Product = { name: string; description?: string; imageUrl?: string; price?: string; currency?: string; type?: string };
+type Product = { name: string; description?: string; imageUrl?: string; price?: string; currency?: string; type?: string; published?: boolean };
 type PaymentMethod = { name: string; label?: string; imageUrl?: string; instructions?: string; enabled?: boolean };
 
 export default function CustomerPublic() {
@@ -33,7 +33,7 @@ export default function CustomerPublic() {
   if (profile.isError || !data) return <div className="flex min-h-screen items-center justify-center bg-[#f7f8fb] p-6"><Card className="max-w-md rounded-3xl"><CardContent className="p-8 text-center"><h1 className="text-xl font-black">{copy.unavailable}</h1><p className="mt-2 text-sm text-slate-500">{copy.unavailableHint}</p><Link href="/"><Button className="mt-6 rounded-xl bg-[#e76f3c]">{copy.back}</Button></Link></CardContent></Card></div>;
 
   const links = [["Instagram", safeExternal(data.instagramUrl), "#e1306c"], ["Twitter / X", safeExternal(data.twitterUrl), "#111827"], ["Facebook", safeExternal(data.facebookUrl), "#2563eb"], ["LinkedIn", safeExternal(data.linkedinUrl), "#0a66c2"]].filter(([, url]) => url) as Array<[string, string, string]>;
-  const products = (data.products ?? []) as Product[];
+  const products = ((data.products ?? []) as Product[]).filter((product) => product.published !== false);
   const paymentMethods = (data.paymentMethods ?? []) as PaymentMethod[];
   const visiblePaymentMethods = paymentMethods.filter((method) => method.enabled !== false);
 

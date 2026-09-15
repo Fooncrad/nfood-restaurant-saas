@@ -1,11 +1,13 @@
 import { Activity, BarChart3, ClipboardList, CircleDollarSign, LogIn } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function ActivityAnalyticsPanel({ restaurantId, title = "النشاط والمبيعات" }: { restaurantId?: number; title?: string }) {
+  const { direction } = useLanguage();
   const summary = trpc.platform.activitySummary.useQuery(restaurantId ? { restaurantId } : undefined, { retry: false, refetchInterval: 30000 });
   const maxSales = Math.max(...(summary.data?.days ?? []).map((day) => day.sales), 1);
-  return <Card className="mt-5 rounded-2xl border-slate-200 bg-white shadow-sm" dir="rtl">
+  return <Card className="mt-5 rounded-2xl border-slate-200 bg-white shadow-sm" dir={direction}>
     <CardHeader className="flex flex-row items-start justify-between gap-3"><div><CardTitle className="flex items-center gap-2 text-base"><BarChart3 className="h-5 w-5 text-[#e76f3c]" />{title}</CardTitle><p className="mt-1 text-xs text-slate-500">بيانات حقيقية مجمعة لآخر 7 أيام، مع سجل النشاط الخاص بالنطاق المحدد.</p></div><span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">تحديث كل 30 ثانية</span></CardHeader>
     <CardContent className="space-y-5">
       {summary.isError && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700">تعذر تحميل التحليلات. Request ID: activity-summary</div>}

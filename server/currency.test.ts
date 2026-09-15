@@ -32,4 +32,27 @@ describe("country and currency catalog", () => {
     expect(new Set(CURRENCIES.map((currency) => currency.code)).size).toBe(CURRENCIES.length);
     expect(COUNTRIES.every((country) => CURRENCIES.some((currency) => currency.code === country.currencyCode))).toBe(true);
   });
+
+  it("covers the world: every inhabited country with its ISO currency", () => {
+    expect(COUNTRIES.length).toBeGreaterThanOrEqual(190);
+    expect(CURRENCIES.length).toBeGreaterThanOrEqual(140);
+    expect(getCountry("GE")).toMatchObject({ name: "Georgia", currencyCode: "GEL" });
+    expect(getCountry("JP")).toMatchObject({ name: "Japan", currencyCode: "JPY" });
+    expect(getCountry("BR")).toMatchObject({ name: "Brazil", currencyCode: "BRL" });
+    expect(getCountry("CL")).toMatchObject({ name: "Chile", currencyCode: "CLP" });
+    expect(getCountry("TH")).toMatchObject({ name: "Thailand", currencyCode: "THB" });
+    expect(getCountry("GH")).toMatchObject({ name: "Ghana", currencyCode: "GHS" });
+    expect(getCountry("US")).toBeDefined();
+    expect(getCountry("GB")).toBeDefined();
+    expect(getCountry("CN")).toBeDefined();
+    expect(getCountry("IN")).toBeDefined();
+  });
+
+  it("infers each world country's currency and symbols", () => {
+    expect(getCountry("GE").currencyCode).toBe("GEL");
+    expect(getCurrency("GEL").symbol).toBe("₾");
+    expect(getCurrency("SYP").symbol).toBe("ل.س");
+    expect(getCurrency("THB").symbol).toBe("฿");
+    expect(getCurrency("PYG").decimals).toBe(0);
+  });
 });

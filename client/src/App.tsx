@@ -11,6 +11,7 @@ import { DASHBOARD_LANGUAGE_STORAGE_KEY, LANGUAGE_STORAGE_KEY, MENU_LANGUAGE_STO
 const routeLoaders = {
   Home: () => import("./pages/Home"),
   RestaurantPublic: () => import("./pages/RestaurantPublic"),
+  RestaurantsDirectory: () => import("./pages/RestaurantsDirectory"),
   CustomerDisplay: () => import("./pages/CustomerDisplay"),
   PublicDisplay: () => import("./pages/PublicDisplay"),
   CustomerPublic: () => import("./pages/CustomerPublic"),
@@ -38,6 +39,7 @@ const routeLoaders = {
 };
 const Home = lazy(routeLoaders.Home);
 const RestaurantPublic = lazy(routeLoaders.RestaurantPublic);
+const RestaurantsDirectory = lazy(routeLoaders.RestaurantsDirectory);
 const CustomerDisplay = lazy(routeLoaders.CustomerDisplay);
 const PublicDisplay = lazy(routeLoaders.PublicDisplay);
 const CustomerPublic = lazy(routeLoaders.CustomerPublic);
@@ -90,7 +92,7 @@ function AppContent() {
     setShowGlobalLoader(false);
   }, []);
   useEffect(() => {
-    const timer = window.setTimeout(() => { void Promise.all([routeLoaders.Home(), routeLoaders.RestaurantPublic(), routeLoaders.CustomerPortal(), routeLoaders.CustomerOrders()]); }, 1800);
+    const timer = window.setTimeout(() => { void Promise.all([routeLoaders.Home(), routeLoaders.RestaurantPublic(), routeLoaders.RestaurantsDirectory(), routeLoaders.CustomerPortal(), routeLoaders.CustomerOrders()]); }, 1800);
     return () => window.clearTimeout(timer);
   }, []);
   useEffect(() => {
@@ -145,6 +147,7 @@ function Router() {
       <Route path="/restaurant/:slug/display" component={CustomerDisplay} />
       <Route path="/restaurant/:slug" component={RestaurantPublic} />
       <Route path="/menu/:slug" component={RestaurantPublic} />
+      <Route path="/restaurants" component={RestaurantsDirectory} />
       <Route path="/customer/:slug" component={() => <CustomerAreaGuard><CustomerPublic /></CustomerAreaGuard>} />
       <Route path="/vcard/:slug" component={() => <CustomerAreaGuard><CustomerPublic /></CustomerAreaGuard>} />
       <Route path="/customer-profile" component={() => <CustomerAreaGuard><CustomerProfileSettingsRoute /></CustomerAreaGuard>} />
