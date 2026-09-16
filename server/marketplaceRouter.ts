@@ -83,6 +83,7 @@ export const marketplaceRouter = router({
       currencyCode: marketplaceListings.currencyCode,
       imageUrl: marketplaceListings.imageUrl,
       isFeatured: marketplaceListings.isFeatured,
+      restaurantId: marketplaceListings.restaurantId,
     }).from(marketplaceListings).where(eq(marketplaceListings.status, "active"));
     let matchingEntityIds = new Set<string>();
     if (sectorIdsBySlug.size) {
@@ -92,12 +93,17 @@ export const marketplaceRouter = router({
     }
     if (!matchingEntityIds.size) return [];
     const entityRows = await db.select().from(platformEntities).where(and(eq(platformEntities.status, true), inArray(platformEntities.id, Array.from(matchingEntityIds))));
+    const linkedRestaurantIds = Array.from(new Set(listings.flatMap((listing) => listing.restaurantId ? [listing.restaurantId] : [])));
+    const linkedRestaurants = linkedRestaurantIds.length ? await db.select({ id: restaurants.id, brandName: restaurants.brandName, brandLogoUrl: restaurants.brandLogoUrl, coverUrl: restaurants.coverUrl, city: restaurants.city, brandColor: restaurants.brandColor, brandAccentColor: restaurants.brandAccentColor }).from(restaurants).where(inArray(restaurants.id, linkedRestaurantIds)) : [];
+    const restaurantsById = new Map(linkedRestaurants.map((restaurant) => [restaurant.id, restaurant]));
     const searchTerm = input.search?.trim().toLowerCase();
     const result = [];
     for (const entity of entityRows) {
       if (searchTerm && !(entity.customerName.toLowerCase().includes(searchTerm) || entity.email.toLowerCase().includes(searchTerm))) continue;
       const entityListings = listings.filter((listing) => listing.entityId === entity.id);
-      const restaurantMatch = await db.select({ id: restaurants.id, brandName: restaurants.brandName, brandLogoUrl: restaurants.brandLogoUrl, coverUrl: restaurants.coverUrl, city: restaurants.city, brandColor: restaurants.brandColor, brandAccentColor: restaurants.brandAccentColor }).from(restaurants).where(eq(restaurants.brandName, entity.customerName)).limit(1);
+      const linkedRestaurantId = entityListings.find((listing) => listing.restaurantId != null)?.restaurantId;
+      let restaurant = linkedRestaurantId ? restaurantsById.get(linkedRestaurantId) ?? null : null;
+      if (!restaurant) restaurant = (await db.select({ id: restaurants.id, brandName: restaurants.brandName, brandLogoUrl: restaurants.brandLogoUrl, coverUrl: restaurants.coverUrl, city: restaurants.city, brandColor: restaurants.brandColor, brandAccentColor: restaurants.brandAccentColor }).from(restaurants).where(eq(restaurants.brandName, entity.customerName)).limit(1))[0] ?? null;
       result.push({
         entityId: entity.id,
         customerName: entity.customerName,
@@ -107,7 +113,7 @@ export const marketplaceRouter = router({
         plan: entity.plan,
         listingCount: entityListings.length,
         minPrice: entityListings.length ? Math.min(...entityListings.map((row) => Number(row.price))) : 0,
-        restaurant: restaurantMatch[0] ?? null,
+        restaurant,
       });
     }
     return result;
@@ -121,7 +127,8 @@ export const marketplaceRouter = router({
     const loyaltySettings = (await db.select().from(storeLoyaltySettings).where(eq(storeLoyaltySettings.entityId, input.entityId)).limit(1))[0] ?? null;
     const now = new Date();
     const coupons = await db.select().from(storeCoupons).where(and(eq(storeCoupons.entityId, input.entityId), eq(storeCoupons.isActive, true), or(isNull(storeCoupons.startsAt), lte(storeCoupons.startsAt, now)), or(isNull(storeCoupons.endsAt), gte(storeCoupons.endsAt, now)))).orderBy(desc(storeCoupons.createdAt));
-    const restaurant = (await db.select().from(restaurants).where(eq(restaurants.brandName, entity.customerName)).limit(1))[0] ?? null;
+    const linkedRestaurantId = listings.find((listing) => listing.restaurantId != null)?.restaurantId;
+    const restaurant = linkedRestaurantId ? (await db.select().from(restaurants).where(eq(restaurants.id, linkedRestaurantId)).limit(1))[0] ?? null : (await db.select().from(restaurants).where(eq(restaurants.brandName, entity.customerName)).limit(1))[0] ?? null;
     return { entity, listings, loyaltySettings, coupons, restaurant };
   }),
   publicListings: publicProcedure.input(z.object({ sectorId: z.number().int().positive().optional(), featuredOnly: z.boolean().optional() }).optional()).query(async ({ input }) => {
@@ -143,7 +150,8 @@ export const marketplaceRouter = router({
     const coupons = await db.select().from(storeCoupons).where(eq(storeCoupons.entityId, entity.id)).orderBy(desc(storeCoupons.createdAt));
     const campaigns = await db.select().from(storeCampaigns).where(eq(storeCampaigns.entityId, entity.id)).orderBy(desc(storeCampaigns.createdAt));
     const referralLinks = await db.select().from(storeReferralLinks).where(eq(storeReferralLinks.entityId, entity.id)).orderBy(desc(storeReferralLinks.createdAt));
-    const restaurant = (await db.select().from(restaurants).where(eq(restaurants.brandName, entity.customerName)).limit(1))[0] ?? null;
+    const linkedRestaurantId = listings.find((listing) => listing.restaurantId != null)?.restaurantId ?? await getMerchantRestaurantId(ctx.user.id);
+    const restaurant = linkedRestaurantId ? (await db.select().from(restaurants).where(eq(restaurants.id, linkedRestaurantId)).limit(1))[0] ?? null : (await db.select().from(restaurants).where(eq(restaurants.brandName, entity.customerName)).limit(1))[0] ?? null;
     const storeCount = await db.select({ total: sql<number>`count(*)` }).from(storeRewardTransactions).where(eq(storeRewardTransactions.entityId, entity.id));
     return {
       entity,
@@ -180,9 +188,11 @@ export const marketplaceRouter = router({
     if (entity.id !== input.entityId) throw new TRPCError({ code: "FORBIDDEN", message: "لا تملك صلاحية هذا المتجر" });
     const sector = (await db.select({ id: marketplaceSectors.id }).from(marketplaceSectors).where(eq(marketplaceSectors.id, input.sectorId)).limit(1))[0];
     if (!sector) throw new TRPCError({ code: "BAD_REQUEST", message: "القطاع غير معروف" });
+    const restaurantId = await getMerchantRestaurantId(ctx.user.id);
     const result = await db.insert(marketplaceListings).values({
       entityId: entity.id,
       sectorId: input.sectorId,
+      restaurantId: restaurantId ?? null,
       title: input.title,
       titleEn: input.titleEn ?? null,
       description: input.description ?? null,
