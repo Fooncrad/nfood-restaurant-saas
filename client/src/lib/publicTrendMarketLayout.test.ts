@@ -70,4 +70,12 @@ describe("public Trend marketplace integration", () => {
     expect(trendSection).toContain("Restaurants, cuisine et cafés");
     expect(trendSection).toContain('locale === "ar" ? (restaurant.brandDescription || copy.fallbackDescription) : copy.fallbackDescription');
   });
+
+  it("replaces temporary restaurant skeletons with an honest localized empty state", () => {
+    expect(trendSection).toContain('restaurants.isLoading ? [0, 1, 2].map');
+    expect(trendSection).toContain('!restaurants.data?.length ? (');
+    expect(trendSection).toContain('{copy.noRestaurants}');
+    expect(trendSection).toContain('No active restaurants yet.');
+    expect(trendSection).toContain('Aucun restaurant actif pour le moment.');
+  });
 });
