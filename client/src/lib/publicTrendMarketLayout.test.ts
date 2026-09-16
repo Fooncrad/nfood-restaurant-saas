@@ -5,6 +5,8 @@ import { describe, expect, it } from "vitest";
 const publicHome = readFileSync(fileURLToPath(new URL("../pages/PublicHome.tsx", import.meta.url)), "utf8");
 const trendSection = readFileSync(fileURLToPath(new URL("../components/PublicTrendMarketSection.tsx", import.meta.url)), "utf8");
 const marketplace = readFileSync(fileURLToPath(new URL("../pages/MarketplaceLanding.tsx", import.meta.url)), "utf8");
+const marketplaceSector = readFileSync(fileURLToPath(new URL("../pages/MarketplaceSector.tsx", import.meta.url)), "utf8");
+const app = readFileSync(fileURLToPath(new URL("../App.tsx", import.meta.url)), "utf8");
 const storeGovernance = readFileSync(fileURLToPath(new URL("../components/MarketplaceStoresView.tsx", import.meta.url)), "utf8");
 
 describe("public Trend marketplace integration", () => {
@@ -24,6 +26,31 @@ describe("public Trend marketplace integration", () => {
     expect(trendSection).toContain('slug: "automotive"');
     expect(trendSection).toContain('slug: "public_works"');
     expect(trendSection).toContain('href={`/marketplace/sector/${slug}`}');
+  });
+
+  it("uses the same canonical sector slugs in the marketplace fallback catalog", () => {
+    ["restaurant", "fashion", "beauty_salon", "grocery", "vegetables", "laundry", "automotive", "public_works"].forEach((slug) => {
+      expect(marketplace).toContain(`slug: "${slug}"`);
+    });
+    expect(marketplace).not.toContain('slug: "restaurants-food-cafes"');
+    expect(marketplace).not.toContain('slug: "fashion-apparel"');
+    expect(marketplace).not.toContain('slug: "field-services"');
+  });
+
+  it("keeps the sector page directional and gives every supported language a safe return state", () => {
+    expect(marketplaceSector).toContain('const { direction, language } = useLanguage()');
+    expect(marketplaceSector).toContain('<main dir={direction}');
+    expect(marketplaceSector).toContain('Back to marketplace');
+    expect(marketplaceSector).toContain('Retour au marché');
+    expect(marketplaceSector).toContain('العودة للسوق');
+    expect(marketplaceSector).toContain('This sector is unavailable');
+    expect(marketplaceSector).toContain('Ce secteur n’est pas disponible');
+  });
+
+  it("redirects legacy store-directory links to the marketplace instead of rendering NotFound", () => {
+    expect(app).toContain('function LegacyStoresRoute()');
+    expect(app).toContain('navigate("/marketplace", { replace: true })');
+    expect(app).toContain('<Route path="/stores" component={LegacyStoresRoute} />');
   });
 
   it("keeps the marketplace free of a side navigation and enables governance actions", () => {

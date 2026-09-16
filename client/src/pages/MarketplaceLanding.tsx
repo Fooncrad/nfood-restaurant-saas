@@ -7,14 +7,14 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 type FallbackSector = { slug: string; labelAr: string; labelEn: string; labelFr: string; icon: LucideIcon; color: string; listingCount: number };
 const fallbackSectors: FallbackSector[] = [
-  { slug: "restaurants-food-cafes", labelAr: "المطاعم والمأكولات والمقاهي", labelEn: "Restaurants, Food & Cafes", labelFr: "Restaurants, cuisine et cafés", icon: UtensilsCrossed, color: "#f97316", listingCount: 0 },
-  { slug: "fashion-apparel", labelAr: "الموضة والأزياء والملبوسات", labelEn: "Fashion, Clothing & Apparel", labelFr: "Mode et habillement", icon: ShoppingBag, color: "#db2777", listingCount: 0 },
-  { slug: "beauty-salons", labelAr: "الصالونات والتجميل والحلاقة", labelEn: "Beauty, Salons & Barbers", labelFr: "Beauté, salons et coiffure", icon: Flower2, color: "#8b5cf6", listingCount: 0 },
-  { slug: "groceries-hypermarkets", labelAr: "البقالات والتموينات والهايبرماركت", labelEn: "Groceries & Hypermarkets", labelFr: "Épiceries et hypermarchés", icon: ShoppingBasket, color: "#0ea5e9", listingCount: 0 },
-  { slug: "fresh-produce", labelAr: "الخضار والفواكه والتمور والمنتجات الطازجة", labelEn: "Fresh Produce, Fruits & Dates", labelFr: "Produits frais, fruits et dattes", icon: CookingPot, color: "#22c55e", listingCount: 0 },
-  { slug: "laundry-rug-care", labelAr: "مغاسل الملابس والسجاد والعناية", labelEn: "Laundry, Rug & Care", labelFr: "Laverie, tapis et entretien", icon: WashingMachine, color: "#6366f1", listingCount: 0 },
+  { slug: "restaurant", labelAr: "المطاعم والمأكولات والمقاهي", labelEn: "Restaurants, Food & Cafes", labelFr: "Restaurants, cuisine et cafés", icon: UtensilsCrossed, color: "#f97316", listingCount: 0 },
+  { slug: "fashion", labelAr: "الموضة والأزياء والملبوسات", labelEn: "Fashion, Clothing & Apparel", labelFr: "Mode et habillement", icon: ShoppingBag, color: "#db2777", listingCount: 0 },
+  { slug: "beauty_salon", labelAr: "الصالونات والتجميل والحلاقة", labelEn: "Beauty, Salons & Barbers", labelFr: "Beauté, salons et coiffure", icon: Flower2, color: "#8b5cf6", listingCount: 0 },
+  { slug: "grocery", labelAr: "البقالات والتموينات والهايبرماركت", labelEn: "Groceries & Hypermarkets", labelFr: "Épiceries et hypermarchés", icon: ShoppingBasket, color: "#0ea5e9", listingCount: 0 },
+  { slug: "vegetables", labelAr: "الخضار والفواكه والتمور والمنتجات الطازجة", labelEn: "Fresh Produce, Fruits & Dates", labelFr: "Produits frais, fruits et dattes", icon: CookingPot, color: "#22c55e", listingCount: 0 },
+  { slug: "laundry", labelAr: "مغاسل الملابس والسجاد والعناية", labelEn: "Laundry, Rug & Care", labelFr: "Laverie, tapis et entretien", icon: WashingMachine, color: "#6366f1", listingCount: 0 },
   { slug: "automotive", labelAr: "خدمات السيارات والصيانة ومغاسل السيارات", labelEn: "Automotive, Repair & Car Wash", labelFr: "Auto, réparation et lavage", icon: Car, color: "#ef4444", listingCount: 0 },
-  { slug: "field-services", labelAr: "الأشغال العامة والصيانة المنزلية والخدمات الميدانية", labelEn: "Field Services & Home Maintenance", labelFr: "Services terrain et maintenance", icon: Wrench, color: "#eab308", listingCount: 0 },
+  { slug: "public_works", labelAr: "الأشغال العامة والصيانة المنزلية والخدمات الميدانية", labelEn: "Field Services & Home Maintenance", labelFr: "Services terrain et maintenance", icon: Wrench, color: "#eab308", listingCount: 0 },
 ];
 
 export default function MarketplaceLanding() {

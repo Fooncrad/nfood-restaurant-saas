@@ -128,6 +128,7 @@ function AppContent() {
 const RESTAURANT_AREA_ROLES = new Set(["restaurant_admin", "waiter", "driver", "cashier", "kitchen", "bar", "restaurant"]);
 function CustomerAreaGuard({ children }: { children: ReactNode }) { const { user, loading } = useAuth(); const [, navigate] = useLocation(); const role = String(user?.testRole ?? user?.role ?? ""); const blocked = Boolean(user && RESTAURANT_AREA_ROLES.has(role)); useEffect(() => { if (blocked) navigate("/restaurant/dashboard"); }, [blocked, navigate]); if (loading || blocked) return <PageLoading />; return <>{children}</>; }
 function RootRoute() { const { user, loading } = useAuth(); if (loading) return <PageLoading />; return user ? <Home /> : <PublicHome />; }
+function LegacyStoresRoute() { const [, navigate] = useLocation(); useEffect(() => { navigate("/marketplace", { replace: true }); }, [navigate]); return <PageLoading />; }
 
 function Router() {
   return (
@@ -155,6 +156,7 @@ function Router() {
       <Route path="/subscription-status" component={SubscriptionStatusPage} />
       <Route path="/marketplace" component={MarketplaceLanding} />
       <Route path="/marketplace/sector/:slug" component={MarketplaceSector} />
+      <Route path="/stores" component={LegacyStoresRoute} />
       <Route path="/store/:entityId/rewards" component={StoreRewards} />
       <Route path="/store/:entityId" component={MarketplaceStore} />
       <Route path="/store-marketing" component={StoreMarketing} />
