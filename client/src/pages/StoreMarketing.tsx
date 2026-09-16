@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { startLogin } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { ArrowRight, Check, Copy, Gift, LayoutDashboard, Loader2, LockKeyhole, Megaphone, Package, Plus, Settings, Sparkles, Tag, Trash2, TrendingUp, WalletCards } from "lucide-react";
+import { ArrowRight, Check, Copy, Gift, ImagePlus, LayoutDashboard, Loader2, LockKeyhole, Megaphone, Package, Plus, Settings, Sparkles, Tag, Trash2, TrendingUp, Upload, WalletCards } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Link, useLocation } from "wouter";
@@ -31,12 +31,13 @@ export default function StoreMarketing() {
   const endCampaign = trpc.marketplace.endCampaign.useMutation({ onSuccess: () => { toast.success("تم إنهاء الحملة"); void provider.refetch(); }, onError: (e) => toast.error(e.message) });
   const createReferralLink = trpc.marketplace.createReferralLink.useMutation({ onSuccess: (data) => { toast.success("تم إنشاء رابط الإحالة"); void provider.refetch(); setLastReferralCode(data.code); setNewReferral({ maxUses: "", expiresAt: "" }); }, onError: (e) => toast.error(e.message) });
   const toggleReferralLink = trpc.marketplace.toggleReferralLink.useMutation({ onSuccess: () => { void provider.refetch(); }, onError: (e) => toast.error(e.message) });
+  const mediaUpload = trpc.media.upload.useMutation();
 
   const [newCoupon, setNewCoupon] = useState({ code: "", description: "", discountType: "percent" as "percent" | "fixed", discountValue: "", minOrderAmount: "0", maxDiscountAmount: "", usageLimit: "", perUserLimit: "1" });
   const [newCampaign, setNewCampaign] = useState({ name: "", description: "", type: "general" as typeof CAMPAIGN_TYPES[number], bonusPoints: "", bonusPercent: "" });
   const [newReferral, setNewReferral] = useState({ maxUses: "", expiresAt: "" });
   const [lastReferralCode, setLastReferralCode] = useState<string | null>(null);
-  const [newProduct, setNewProduct] = useState({ sectorId: 0, title: "", titleEn: "", description: "", descriptionEn: "", imageUrl: "", price: "", compareAtPrice: "", unit: "piece", stockQuantity: "" });
+  const [newProduct, setNewProduct] = useState({ sectorId: 0, title: "", titleEn: "", description: "", descriptionEn: "", imageUrl: "", price: "", compareAtPrice: "", unit: "piece", stockQuantity: "", tags: "", sizes: "", colors: "", addOns: "", duration: "", material: "", weight: "" });
   const [newLoyalty, setNewLoyalty] = useState({ pointsPerCurrency: "1", redeemRate: "0.01", minPointsToRedeem: "100", welcomeBonusPoints: "0", isActive: true });
 
   useEffect(() => { if (!loading && user && !provider.isLoading && !provider.data?.entity) navigate("/"); }, [loading, user, provider.isLoading, provider.data?.entity, navigate]);
@@ -57,8 +58,21 @@ export default function StoreMarketing() {
     if (!newProduct.sectorId) return toast.error("اختر القطاع أولاً");
     if (!newProduct.title.trim()) return toast.error("أدخل اسم المنتج");
     if (!newProduct.price || Number(newProduct.price) <= 0) return toast.error("أدخل سعر صحيح");
-    createListing.mutate({ entityId: entity!.id, sectorId: newProduct.sectorId, title: newProduct.title.trim(), titleEn: newProduct.titleEn.trim() || undefined, description: newProduct.description.trim() || undefined, descriptionEn: newProduct.descriptionEn.trim() || undefined, imageUrl: newProduct.imageUrl.trim() || undefined, price: Number(newProduct.price).toFixed(2), compareAtPrice: newProduct.compareAtPrice ? Number(newProduct.compareAtPrice).toFixed(2) : undefined, unit: newProduct.unit.trim() || "piece", stockQuantity: newProduct.stockQuantity ? parseInt(newProduct.stockQuantity) : undefined });
-    setNewProduct({ sectorId: 0, title: "", titleEn: "", description: "", descriptionEn: "", imageUrl: "", price: "", compareAtPrice: "", unit: "piece", stockQuantity: "" });
+    const metadata = Object.fromEntries(Object.entries({ sizes: newProduct.sizes, colors: newProduct.colors, addOns: newProduct.addOns, duration: newProduct.duration, material: newProduct.material, weight: newProduct.weight }).filter(([, value]) => value.trim()));
+    createListing.mutate({ entityId: entity!.id, sectorId: newProduct.sectorId, title: newProduct.title.trim(), titleEn: newProduct.titleEn.trim() || undefined, description: newProduct.description.trim() || undefined, descriptionEn: newProduct.descriptionEn.trim() || undefined, imageUrl: newProduct.imageUrl.trim() || undefined, price: Number(newProduct.price).toFixed(2), compareAtPrice: newProduct.compareAtPrice ? Number(newProduct.compareAtPrice).toFixed(2) : undefined, unit: newProduct.unit.trim() || "piece", stockQuantity: newProduct.stockQuantity ? parseInt(newProduct.stockQuantity) : undefined, tagsJson: newProduct.tags.trim() ? JSON.stringify(newProduct.tags.split(",").map((tag) => tag.trim()).filter(Boolean)) : undefined, metadataJson: Object.keys(metadata).length ? JSON.stringify(metadata) : undefined });
+    setNewProduct({ sectorId: 0, title: "", titleEn: "", description: "", descriptionEn: "", imageUrl: "", price: "", compareAtPrice: "", unit: "piece", stockQuantity: "", tags: "", sizes: "", colors: "", addOns: "", duration: "", material: "", weight: "" });
+  };
+
+  const handleProductImageUpload = async (file?: File) => {
+    if (!file) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) return toast.error("ارفع صورة JPG أو PNG أو WEBP");
+    if (file.size > 8 * 1024 * 1024) return toast.error("حجم الصورة يجب ألا يتجاوز 8 ميجابايت");
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => { const reader = new FileReader(); reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("تعذر قراءة الصورة")); reader.onerror = () => reject(new Error("تعذر قراءة الصورة")); reader.readAsDataURL(file); });
+      const uploaded = await mediaUpload.mutateAsync({ fileName: file.name, contentType: file.type, base64, category: "image", scope: "user" });
+      setNewProduct((current) => ({ ...current, imageUrl: uploaded.url }));
+      toast.success("تم رفع الصورة وإضافتها للمنتج");
+    } catch (error) { toast.error(error instanceof Error ? error.message : "تعذر رفع الصورة"); }
   };
 
   const handleCreateCoupon = () => {
@@ -135,9 +149,12 @@ export default function StoreMarketing() {
                   <div><label className="mb-1 block text-xs text-slate-400">الوحدة</label><Input value={newProduct.unit} onChange={(e) => setNewProduct({ ...newProduct, unit: e.target.value })} className="h-11 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500" placeholder="piece" /></div>
                   <div><label className="mb-1 block text-xs text-slate-400">المخزون</label><Input value={newProduct.stockQuantity} onChange={(e) => setNewProduct({ ...newProduct, stockQuantity: e.target.value })} type="number" min="0" className="h-11 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500" placeholder="اختياري" /></div>
                   <div><label className="mb-1 block text-xs text-slate-400">رابط الصورة</label><Input value={newProduct.imageUrl} onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })} className="h-11 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500" placeholder="https://..." /></div>
+                  <div><label className="mb-1 block text-xs text-slate-400">وسوم البحث</label><Input value={newProduct.tags} onChange={(e) => setNewProduct({ ...newProduct, tags: e.target.value })} className="h-11 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500" placeholder="قهوة، عضوي، عرض" /></div>
                 </div>
+                <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-orange-300/30 bg-orange-400/5 p-4 text-center transition hover:bg-orange-400/10"><input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={mediaUpload.isPending} onChange={(event) => { void handleProductImageUpload(event.target.files?.[0]); event.currentTarget.value = ""; }} />{newProduct.imageUrl ? <img src={newProduct.imageUrl} alt="معاينة المنتج" className="h-20 w-28 rounded-xl object-cover" /> : <ImagePlus className="h-7 w-7 text-orange-300" />}<span className="mt-2 text-xs font-bold text-orange-100">{mediaUpload.isPending ? "جارٍ رفع الصورة..." : "ارفع صورة أو التقطها من الهاتف — JPG / PNG / WEBP حتى 8MB"}</span></label>
                 <div><label className="mb-1 block text-xs text-slate-400">الوصف (عربي)</label><Textarea value={newProduct.description} onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })} rows={2} className="rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500" placeholder="وصف المنتج..." /></div>
                 <div><label className="mb-1 block text-xs text-slate-400">الوصف (إنجليزي)</label><Textarea value={newProduct.descriptionEn} onChange={(e) => setNewProduct({ ...newProduct, descriptionEn: e.target.value })} rows={2} className="rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500" placeholder="Product description..." /></div>
+                <div className="grid gap-3 rounded-2xl border border-white/10 bg-black/10 p-4 sm:grid-cols-2 lg:grid-cols-3"><p className="sm:col-span-2 lg:col-span-3 text-xs font-black text-orange-200">خصائص حسب النشاط — املأ ما يناسب منتجك أو خدمتك فقط</p><Input value={newProduct.sizes} onChange={(e) => setNewProduct({ ...newProduct, sizes: e.target.value })} className="h-11 rounded-xl border-white/10 bg-white/5 text-white" placeholder="المقاسات: S, M, L أو 42, 43" /><Input value={newProduct.colors} onChange={(e) => setNewProduct({ ...newProduct, colors: e.target.value })} className="h-11 rounded-xl border-white/10 bg-white/5 text-white" placeholder="الألوان: أسود، أبيض" /><Input value={newProduct.addOns} onChange={(e) => setNewProduct({ ...newProduct, addOns: e.target.value })} className="h-11 rounded-xl border-white/10 bg-white/5 text-white" placeholder="الإضافات أو الخيارات" /><Input value={newProduct.duration} onChange={(e) => setNewProduct({ ...newProduct, duration: e.target.value })} className="h-11 rounded-xl border-white/10 bg-white/5 text-white" placeholder="مدة الخدمة: 45 دقيقة" /><Input value={newProduct.material} onChange={(e) => setNewProduct({ ...newProduct, material: e.target.value })} className="h-11 rounded-xl border-white/10 bg-white/5 text-white" placeholder="الخامة أو الموديل" /><Input value={newProduct.weight} onChange={(e) => setNewProduct({ ...newProduct, weight: e.target.value })} className="h-11 rounded-xl border-white/10 bg-white/5 text-white" placeholder="الوزن أو السعة" /></div>
                 <Button type="button" onClick={handleCreateListing} disabled={createListing.isPending || !newProduct.sectorId} className="rounded-xl bg-[#E76F3C] px-6 font-black hover:bg-orange-400">{createListing.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Plus className="ml-1 h-4 w-4" />إضافة المنتج</>}</Button>
               </CardContent>
             </Card>

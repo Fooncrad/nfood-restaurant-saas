@@ -172,6 +172,7 @@ export const marketplaceRouter = router({
     stockQuantity: z.number().int().nonnegative().optional(),
     isFeatured: z.boolean().optional(),
     tagsJson: z.string().max(2000).optional(),
+    metadataJson: z.string().max(8000).optional(),
   })).mutation(async ({ ctx, input }) => {
     const db = await getDb();
     if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database is not available" });
@@ -194,6 +195,7 @@ export const marketplaceRouter = router({
       stockQuantity: input.stockQuantity ?? null,
       isFeatured: input.isFeatured ?? false,
       tagsJson: input.tagsJson ?? null,
+      metadataJson: input.metadataJson ?? null,
       status: "active",
     });
     const id = Number(result[0].insertId);
@@ -215,6 +217,7 @@ export const marketplaceRouter = router({
     isFeatured: z.boolean().optional(),
     status: z.enum(["draft", "active", "paused", "sold_out"]).optional(),
     tagsJson: z.string().max(2000).nullable().optional(),
+    metadataJson: z.string().max(8000).nullable().optional(),
   })).mutation(async ({ ctx, input }) => {
     const db = await getDb();
     if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database is not available" });
