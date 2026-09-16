@@ -87,7 +87,7 @@ export default function Home() {
   }, [active]);
   const adminPanelProps = isCentralAdmin ? { children: adminPanelChildren } : {};
   const workspaceReady = Boolean(user && workspaceState === "ready");
-  useEffect(() => { if (isCentralAdmin) setActive("admin"); }, [isCentralAdmin]);
+  useEffect(() => { if (isCentralAdmin) setActive("overview"); }, [isCentralAdmin]);
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);

@@ -35,17 +35,17 @@ export type CentralAdminNavKey = "overview" | "admin" | "accounts" | "settings" 
 
 const NAV_ORDER: CentralAdminNavKey[] = ["overview", "admin", "accounts", "settings", "languages", "files", "stores", "trend", "security", "health"];
 
-const NAV_LABELS: Record<CentralAdminNavKey, { ar: string; en: string }> = {
-  overview: { ar: "نظرة عامة", en: "Overview" },
-  admin: { ar: "Super Admin", en: "Super Admin" },
-  accounts: { ar: "الحسابات", en: "Accounts" },
-  settings: { ar: "الإعدادات العامة", en: "General settings" },
-  languages: { ar: "اللغة والترجمة", en: "Languages" },
-  files: { ar: "مكتبة الملفات", en: "Media library" },
-  stores: { ar: "جميع المتاجر", en: "All stores" },
-  trend: { ar: "Trend Kitchen · سوق نفود", en: "Trend Kitchen" },
-  security: { ar: "أمان الحساب والجلسات", en: "Security" },
-  health: { ar: "صحة النظام", en: "System health" },
+const NAV_LABELS: Record<CentralAdminNavKey, { ar: string; en: string; fr: string }> = {
+  overview: { ar: "نظرة عامة", en: "Overview", fr: "Vue d’ensemble" },
+  admin: { ar: "Super Admin", en: "Super Admin", fr: "Super administrateur" },
+  accounts: { ar: "الحسابات", en: "Accounts", fr: "Comptes" },
+  settings: { ar: "الإعدادات العامة", en: "General settings", fr: "Paramètres généraux" },
+  languages: { ar: "اللغة والترجمة", en: "Languages", fr: "Langues" },
+  files: { ar: "مكتبة الملفات", en: "Media library", fr: "Médiathèque" },
+  stores: { ar: "جميع المتاجر", en: "All stores", fr: "Toutes les boutiques" },
+  trend: { ar: "Trend Kitchen · سوق نفود", en: "Trend Kitchen", fr: "Trend Kitchen" },
+  security: { ar: "أمان الحساب والجلسات", en: "Security", fr: "Sécurité" },
+  health: { ar: "صحة النظام", en: "System health", fr: "Santé du système" },
 };
 
 const NAV_ICONS: Record<CentralAdminNavKey, LucideIcon> = {
@@ -70,11 +70,11 @@ const ORDER_STATUS_MAP: Record<Order["status"], AdminOrderStatus> = {
   completed: "completed",
 };
 
-const STATUS_META: Record<AdminOrderStatus, { label: { ar: string; en: string }; badge: string; dot: string }> = {
-  review: { label: { ar: "مراجعة", en: "Review" }, badge: "border-amber-200 bg-amber-50 text-amber-600", dot: "bg-amber-500" },
-  pending: { label: { ar: "قيد المعالجة", en: "Processing" }, badge: "border-sky-200 bg-sky-50 text-sky-600", dot: "bg-sky-500" },
-  payment: { label: { ar: "بانتظار الدفع", en: "Awaiting payment" }, badge: "border-violet-200 bg-violet-50 text-violet-600", dot: "bg-violet-500" },
-  completed: { label: { ar: "مكتمل", en: "Completed" }, badge: "border-emerald-200 bg-emerald-50 text-emerald-600", dot: "bg-emerald-500" },
+const STATUS_META: Record<AdminOrderStatus, { label: { ar: string; en: string; fr: string }; badge: string; dot: string }> = {
+  review: { label: { ar: "مراجعة", en: "Review", fr: "À vérifier" }, badge: "border-amber-200 bg-amber-50 text-amber-600", dot: "bg-amber-500" },
+  pending: { label: { ar: "قيد المعالجة", en: "Processing", fr: "En traitement" }, badge: "border-sky-200 bg-sky-50 text-sky-600", dot: "bg-sky-500" },
+  payment: { label: { ar: "بانتظار الدفع", en: "Awaiting payment", fr: "Paiement en attente" }, badge: "border-violet-200 bg-violet-50 text-violet-600", dot: "bg-violet-500" },
+  completed: { label: { ar: "مكتمل", en: "Completed", fr: "Terminé" }, badge: "border-emerald-200 bg-emerald-50 text-emerald-600", dot: "bg-emerald-500" },
 };
 
 const COPY_AR = {
@@ -104,6 +104,11 @@ const COPY_AR = {
   salesTitle: "أداء المبيعات",
   salesSubtitle: "آخر 14 يومًا",
   ordersChartTitle: "الطلبات اليومية",
+  noResults: "لا توجد نتائج",
+  all: "الكل",
+  transferReceiptsPending: "إيصالات تحويل بانتظار المراجعة",
+  reviewAction: "مراجعة",
+  close: "إغلاق",
   managementTitle: "أدوات إدارة المنصة",
   managementSubtitle: "الكشوف والكتالوجات والضوابط التفصيلية",
   noNotifications: "لا توجد إشعارات",
@@ -151,6 +156,11 @@ const COPY_EN = {
   salesTitle: "Sales performance",
   salesSubtitle: "Last 14 days",
   ordersChartTitle: "Daily orders",
+  noResults: "No results",
+  all: "All",
+  transferReceiptsPending: "transfer receipts awaiting review",
+  reviewAction: "Review",
+  close: "Close",
   managementTitle: "Platform management tools",
   managementSubtitle: "Reports, catalogs and detailed controls",
   noNotifications: "No notifications",
@@ -169,6 +179,58 @@ const COPY_EN = {
   arr: "Annual recurring revenue",
   churn: "Churn (30 days)",
   recent: "Recent notifications",
+};
+
+const COPY_FR = {
+  searchNav: "Rechercher dans la navigation…",
+  searchOrders: "Rechercher des commandes…",
+  centralAdmin: "ADMINISTRATION CENTRALE",
+  sales: "Ventes totales",
+  ordersToday: "Commandes du jour",
+  avgOrder: "Panier moyen",
+  activeRestaurants: "Restaurants actifs",
+  platformCustomers: "Clients de la plateforme",
+  mrr: "Revenu mensuel récurrent",
+  tabOrders: "Commandes",
+  tabCustomers: "Clients",
+  tabPurchases: "Achats",
+  tabNfc: "NFC · Profil",
+  ordersTitle: "Commandes récentes",
+  ordersOverline: "Activité des 200 dernières commandes",
+  noOrders: "Aucune commande",
+  ordersHint: "Les commandes en direct des restaurants apparaîtront ici à leur arrivée.",
+  orderId: "Commande",
+  channel: "Canal / Table",
+  items: "Articles",
+  total: "Total",
+  status: "Statut",
+  time: "Heure",
+  salesTitle: "Performance des ventes",
+  salesSubtitle: "14 derniers jours",
+  ordersChartTitle: "Commandes quotidiennes",
+  noResults: "Aucun résultat",
+  all: "Tous",
+  transferReceiptsPending: "reçus de virement en attente de vérification",
+  reviewAction: "Vérifier",
+  close: "Fermer",
+  managementTitle: "Outils de gestion de la plateforme",
+  managementSubtitle: "Rapports, catalogues et contrôles détaillés",
+  noNotifications: "Aucune notification",
+  markAllRead: "Tout marquer comme lu",
+  deleteAll: "Tout supprimer",
+  help: "Besoin d’aide ?",
+  helpBody: "Contactez l’équipe NFOOD via le centre d’aide ou le chat en direct.",
+  logout: "Se déconnecter",
+  adminAccount: "Compte administrateur",
+  publicSite: "Site public",
+  publicSiteHint: "Voir le site comme les visiteurs",
+  notifications: "Notifications",
+  noTransactions: "Aucune transaction enregistrée",
+  noCustomers: "Aucun client",
+  nfcTitle: "Abonnements par forfait",
+  arr: "Revenu annuel récurrent (ARR)",
+  churn: "Taux d’attrition (30 jours)",
+  recent: "Notifications récentes",
 };
 
 function Sparkline({ points, stroke }: { points: number[]; stroke: string }) {
@@ -256,7 +318,7 @@ export function CentralAdminCommandCenter({
 }: CentralAdminCommandCenterProps) {
   const { theme, toggleTheme } = useTheme();
   const { direction, language, locale } = useLanguage();
-  const copy = language === "ar" ? COPY_AR : COPY_EN;
+  const copy = language === "ar" ? COPY_AR : language === "fr" ? COPY_FR : COPY_EN;
   const dark = theme === "dark";
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -328,12 +390,12 @@ export function CentralAdminCommandCenter({
       .slice(0, 60);
   }, [orders, search, orderFilter]);
 
-  const filteredNav = NAV_ORDER.filter((key) => !navQuery.trim() || NAV_LABELS[key].ar.includes(navQuery.trim()) || NAV_LABELS[key].en.toLowerCase().includes(navQuery.trim().toLowerCase()));
+  const filteredNav = NAV_ORDER.filter((key) => !navQuery.trim() || NAV_LABELS[key].ar.includes(navQuery.trim()) || NAV_LABELS[key].en.toLowerCase().includes(navQuery.trim().toLowerCase()) || NAV_LABELS[key].fr.toLowerCase().includes(navQuery.trim().toLowerCase()));
 
   const notifications = notificationsQuery.data ?? [];
   const unreadCount = notificationCount > 0 ? notificationCount : notifications.filter((item) => !item.readAt).length;
 
-  const label = (item: { ar: string; en: string }) => (language === "ar" ? item.ar : item.en);
+  const label = (item: { ar: string; en: string; fr: string }) => (language === "ar" ? item.ar : language === "fr" ? item.fr : item.en);
 
   const pageBg = dark ? "#071525" : "#f6f8fb";
   const cardBg = dark ? "#0d2038" : "#ffffff";
@@ -380,12 +442,12 @@ export function CentralAdminCommandCenter({
               className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition ${isActive ? "bg-orange-500/15 text-orange-400" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}
             >
               <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-orange-400" : "text-slate-400"}`} />
-              <span className="truncate">{NAV_LABELS[key][language === "ar" ? "ar" : "en"]}</span>
+              <span className="truncate">{label(NAV_LABELS[key])}</span>
               {isActive && <span className="ms-auto h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500" />}
             </button>
           );
         })}
-        {filteredNav.length === 0 && <p className="px-3 py-2 text-xs text-slate-500">لا نتائج</p>}
+        {filteredNav.length === 0 && <p className="px-3 py-2 text-xs text-slate-500">{copy.noResults}</p>}
       </nav>
       <div className="shrink-0 border-t border-white/10 p-4">
         <div className="rounded-xl border border-orange-500/20 bg-orange-500/10 p-3">
@@ -460,7 +522,7 @@ export function CentralAdminCommandCenter({
               className={`rounded-lg px-3 py-1.5 text-[11px] font-bold transition ${orderFilter === key ? "bg-orange-500 text-white" : ""}`}
               style={orderFilter === key ? {} : { color: textSecondary }}
             >
-              {key === "all" ? (language === "ar" ? "الكل" : "All") : label(STATUS_META[key].label)}
+              {key === "all" ? copy.all : label(STATUS_META[key].label)}
             </button>
           ))}
         </div>
@@ -722,7 +784,7 @@ export function CentralAdminCommandCenter({
                 {copy.centralAdmin}
               </p>
               <h1 className="truncate text-base font-black md:text-lg" style={{ color: textPrimary }}>
-                {NAV_LABELS[active][language === "ar" ? "ar" : "en"]}
+                {label(NAV_LABELS[active])}
               </h1>
             </div>
           </div>
@@ -856,13 +918,13 @@ export function CentralAdminCommandCenter({
             <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-xs text-orange-700 dark:border-orange-500/30 dark:bg-orange-500/10 dark:text-orange-200">
               <ShoppingBag className="h-4 w-4" />
               <p className="flex-1 font-bold">
-                {language === "ar" ? `${pendingTransferCount} إيصالات تحويل بانتظار المراجعة` : `${pendingTransferCount} transfer receipts awaiting review`}
+                {`${pendingTransferCount} ${copy.transferReceiptsPending}`}
               </p>
               <button type="button" onClick={onOpenTransfers} className="rounded-lg bg-orange-500 px-3 py-1.5 font-bold text-white">
-                {language === "ar" ? "مراجعة" : "Review"}
+                {copy.reviewAction}
               </button>
               {onDismissTransfers && (
-                <button type="button" onClick={onDismissTransfers} aria-label={language === "ar" ? "إغلاق" : "Close"} style={{ color: textSecondary }}>
+                <button type="button" onClick={onDismissTransfers} aria-label={copy.close} style={{ color: textSecondary }}>
                   <X className="h-4 w-4" />
                 </button>
               )}
@@ -983,7 +1045,7 @@ export function CentralAdminCommandCenter({
               <div className="flex min-h-64 flex-col items-center justify-center rounded-2xl px-6 text-center" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
                 <CheckCircle2 className="h-8 w-8 text-orange-500" />
                 <p className="mt-3 text-sm font-bold" style={{ color: textPrimary }}>
-                  {NAV_LABELS[active][language === "ar" ? "ar" : "en"]}
+                  {label(NAV_LABELS[active])}
                 </p>
               </div>
             )
