@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   LayoutDashboard, ShieldAlert, Users, Settings, Languages,
   FolderOpen, TrendingUp, ShieldCheck, HeartPulse, Search,
@@ -9,6 +9,7 @@ import {
   Cookie, Megaphone, Send, Pencil, Store,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 
 const translations = {
@@ -119,7 +120,8 @@ function SectionGroupLabel({ children }: { children: ReactNode }) {
 
 export function CentralAdminDashboard({ onToggleTheme, currentTheme }: { onToggleTheme?: () => void, currentTheme: string }) {
   const dark = currentTheme === 'dark';
-  const [lang, setLang] = useState<Language>(() => (localStorage.getItem('nfood-lang') as Language) || 'ar');
+  const { language: activeLanguage, setLanguage: setGlobalLanguage } = useLanguage();
+  const lang: Language = activeLanguage === 'en' || activeLanguage === 'fr' ? activeLanguage : 'ar';
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -225,11 +227,6 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: { onToggl
 
   const getSectorLabel = (sector: SectorGovernance) => lang === 'ar' ? sector.labelAr : lang === 'fr' ? sector.labelFr : sector.labelEn;
 
-  useEffect(() => {
-    document.documentElement.dir = t.dir;
-    localStorage.setItem('nfood-lang', lang);
-  }, [lang, t.dir]);
-
   const summary = liveData?.summary;
 
   const orders: OrderType[] = (liveData?.entities ?? []).map((row) => ({
@@ -257,7 +254,7 @@ export function CentralAdminDashboard({ onToggleTheme, currentTheme }: { onToggl
 
   const cycleLanguage = () => {
     const order: Language[] = ['ar', 'en', 'fr'];
-    setLang((current) => order[(order.indexOf(current) + 1) % order.length]);
+    setGlobalLanguage(order[(order.indexOf(lang) + 1) % order.length]);
   };
 
   const isSectorSection = ALL_SECTORS.has(currentSection);
