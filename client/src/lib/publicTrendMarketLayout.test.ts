@@ -32,4 +32,15 @@ describe("public Trend marketplace integration", () => {
     expect(storeGovernance).toContain('store.status ? "تعطيل" : "تفعيل"');
     expect(storeGovernance).toContain("PLAN_TIERS");
   });
+
+  it("keeps complete copy sets for Arabic, English, and French without rendering Arabic fallback in public English or French", () => {
+    expect(publicHome).toContain("const copy = {");
+    expect(publicHome).toContain("Everything your business needs.");
+    expect(publicHome).toContain("Tout ce dont votre activité a besoin.");
+    expect(publicHome).toContain("كل ما يحتاجه نشاطك.");
+    expect(trendSection).toContain("const localizedSectorCopy = {");
+    expect(trendSection).toContain("Restaurants, Food & Cafés");
+    expect(trendSection).toContain("Restaurants, cuisine et cafés");
+    expect(trendSection).toContain('locale === "ar" ? (restaurant.brandDescription || copy.fallbackDescription) : copy.fallbackDescription');
+  });
 });
