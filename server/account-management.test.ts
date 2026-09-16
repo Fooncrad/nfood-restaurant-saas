@@ -10,7 +10,26 @@ function context(role: "admin" | "user" = "user", testRole?: "customer" | "drive
   return { user: { id: userId, openId: "account-test", name: "اختبار", email: "test@nfood.local", loginMethod: "test", role, testRole, createdAt: new Date(), updatedAt: new Date(), lastSignedIn: new Date() }, req: { protocol: "https", headers: {} } as TrpcContext["req"], res: { clearCookie: () => undefined } as TrpcContext["res"] };
 }
 
+function publicContext(): TrpcContext {
+  return {
+    user: null,
+    req: { protocol: "https", headers: {}, get: () => undefined, ip: "127.0.0.1" } as TrpcContext["req"],
+    res: { cookie: () => undefined, clearCookie: () => undefined } as TrpcContext["res"],
+  };
+}
+
 describe("admin account management", () => {
+  it("refreshes the existing Super Admin seed without a duplicate-key insert failure", async () => {
+    const db = await getDb();
+    if (!db) return;
+
+    const caller = appRouter.createCaller(publicContext());
+    await expect(caller.auth.testLogin({ email: "admin", password: "incorrect-test-password" })).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+
+    const account = (await db.select().from(testAccounts).where(eq(testAccounts.email, "fooncards@gmail.com")).limit(1))[0];
+    expect(account).toEqual(expect.objectContaining({ displayName: "FOON Cards · Super Admin", role: "admin", isActive: true }));
+  });
+
   it("restricts the directory and updates accounts without exposing passwordHash", async () => {
     const db = await getDb();
     if (!db) return;
