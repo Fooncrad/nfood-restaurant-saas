@@ -7,7 +7,7 @@ type NfoodsLoadingScreenProps = {
   onComplete?: () => void;
 };
 
-const LETTERS = ["N", "F", "O", "O", "D", "S"];
+const LETTERS = ["N", "F", "O", "O", "D"];
 
 function prefersReducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -15,7 +15,7 @@ function prefersReducedMotion() {
 
 export default function NfoodsLoadingScreen({ onComplete }: NfoodsLoadingScreenProps) {
   const { language } = useLanguage();
-  const loadingCopy = language === "ar" ? { label: "جارٍ تحميل NFOODS", caption: "تجربة الطعام تبدأ هنا" } : language === "fr" ? { label: "Chargement de NFOODS", caption: "L’expérience culinaire commence ici" } : { label: "Loading NFOODS", caption: "Your food experience starts here" };
+  const loadingCopy = language === "ar" ? { label: "جارٍ تحميل NFOOD", caption: "تجربة الطعام تبدأ هنا" } : language === "fr" ? { label: "Chargement de NFOOD", caption: "L’expérience culinaire commence ici" } : { label: "Loading NFOOD", caption: "Your food experience starts here" };
   const [stage, setStage] = useState<LoaderStage>("letters");
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function NfoodsLoadingScreen({ onComplete }: NfoodsLoadingScreenP
     >
       <div className="nfood-loader-aura" aria-hidden="true" />
       <div className="nfood-loader-content">
-        <div className="nfood-loader-word" aria-label="NFOODS">
+        <div className="nfood-loader-word" aria-label="NFOOD">
           {LETTERS.map((letter, index) => (
             <span
               key={`${letter}-${index}`}
